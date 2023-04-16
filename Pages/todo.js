@@ -33,6 +33,7 @@ function TodoPage({listTitle}) {
         <SafeAreaView style = {styles.container}>
             <Text style = {styles.title}>{listTitle}</Text>
             <View style = {{width: '100%'}}>
+                
             <FlatList
                 data={listItems}
                 renderItem={({item}) => (
