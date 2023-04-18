@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import {useState} from 'react'
-import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity, FlatList, ScrollView, VirtualizedList, KeyboardAvoidingView} from 'react-native';
+import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity, FlatList, ScrollView, VirtualizedList, KeyboardAvoidingView, Button} from 'react-native';
 import TodoInput from '../components/customInput';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 function TodoPage({listTitle}) {
     const [listItems, setListItems] = useState([])
     const id = useRef(0)
+    const [viewDelete, setViewDelete] = useState(false)
     const [emptylist, setemptyList] = useState(true) 
     const addItem = () => {
         setemptyList(false)
@@ -37,7 +38,10 @@ function TodoPage({listTitle}) {
 
     return (
         <SafeAreaView style = {styles.container}>
-            <Text style = {styles.title}>{listTitle}</Text>
+            <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Text style = {styles.title}>{listTitle}</Text>
+                <Button title={viewDelete ? 'Done' : 'Edit'} onPress={() => setViewDelete(!viewDelete)}/>
+            </View>
             {!emptylist && <KeyboardAvoidingView behavior= {Platform.OS === 'ios' ? 'padding' : 'height'} style = {{flex: 1}}>
             <View style = {{width: '100%', height: '90%'}}>
             <FlatList
@@ -45,14 +49,16 @@ function TodoPage({listTitle}) {
                 renderItem={({item}) => (
                 <View style = {{flexDirection: 'row'}}>
                     <TodoInput onChangeText = {text => handleInput(text, item)} deleteInput = {() => {if(item.name == "") handleDelete(item.key)}}/>
+                    {viewDelete &&
                     <TouchableOpacity onPress = {() => handleDelete(item.key)}>
                         <Icon name = 'minus-circle' size = {25} color = "red"/>
                     </TouchableOpacity>
+                    }   
                 </View>)}
             />
             </View>
             </KeyboardAvoidingView>
-            }   
+            }
             {emptylist &&
                 <View>
                     <Text style = {{textAlign: 'center', fontSize: 20, color: 'grey'}}>Currently No Added Items</Text>
@@ -78,7 +84,6 @@ const styles = StyleSheet.create({
 
     title: {
         fontSize: 35,
-        color: 'green',
         fontWeight: 'bold',
         padding: 10,
     },
