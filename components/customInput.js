@@ -3,7 +3,7 @@ import {useState} from 'react';
 import { TextInput, View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-function TodoInput({checkClicked, ...props}) {
+function TodoInput({checkClicked, deleteInput = () => {}, ...props}) {
     const [focus, setFocus] = useState(false)
     const [clicked, setClick] = useState(false)
     
@@ -14,7 +14,11 @@ function TodoInput({checkClicked, ...props}) {
                 {clicked && <Icon name = 'check-circle' size = {26} color = 'green' />}
             </TouchableOpacity>
              <TextInput  maxLength = {30} onFocus = {() => setFocus(true)} {...props} autoFocus = {true}
-             onBlur = {() => setFocus(false)} style = {{borderBottomWidth: 1, fontSize: 16, flexGrow: 1, borderColor: focus ? 'green' : 'grey', alignItems: 'center'}} />
+              onBlur = {() => {
+                setFocus(false) 
+                deleteInput()}}
+                style = {{ fontSize: 16, flexGrow: 1, 
+                borderColor: focus ? 'lightblue' : 'grey', alignItems: 'center', borderBottomWidth: focus ? 2 : 1, alignItems: 'center'}} />
         </View>
     );
 }
