@@ -2,19 +2,24 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import React from 'react';
 import TodoPage from './Pages/todo';
+import TodoScreen from './Pages/ListPage';
+import tempData from './tempData';
+import HomePage from './Pages/HomePage';
+
+
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <TodoPage listTitle={'Groceries'}/>
+    <View style={styles.container}>
+      <HomePage />
       <StatusBar style="auto" />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#003366'
   },
 });

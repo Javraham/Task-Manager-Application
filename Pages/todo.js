@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {useState} from 'react'
 import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity, FlatList, ScrollView, VirtualizedList, KeyboardAvoidingView, Button} from 'react-native';
 import TodoInput from '../components/customInput';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 
 function TodoPage({listTitle}) {
@@ -16,14 +17,21 @@ function TodoPage({listTitle}) {
         setListItems(newList);
     }
 
+    useEffect(() => {
+        if(listItems.length == 0){
+            setemptyList(true)
+        }
+        console.log('updated')
+    }, [viewDelete])
+
     const handleDelete = (id) => {
         const filtered = listItems.filter(item => item.key != id)
         setListItems(filtered)
-        console.log(listItems)
         if(listItems.length == 1){
-            setemptyList(true)
+            setViewDelete(false)
         }
     }
+    console.log(listItems)
 
     const handleInput = (text, input) => {
         const index = listItems.indexOf(input)
@@ -40,7 +48,7 @@ function TodoPage({listTitle}) {
         <SafeAreaView style = {styles.container}>
             <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Text style = {styles.title}>{listTitle}</Text>
-                <Button title={viewDelete ? 'Done' : 'Edit'} onPress={() => setViewDelete(!viewDelete)}/>
+                <Button title={viewDelete ? 'Done': 'Edit'} onPress={() => {if(listItems.length > 0)setViewDelete(!viewDelete)}}/>
             </View>
             {!emptylist && <KeyboardAvoidingView behavior= {Platform.OS === 'ios' ? 'padding' : 'height'} style = {{flex: 1}}>
             <View style = {{width: '100%', height: '90%'}}>
