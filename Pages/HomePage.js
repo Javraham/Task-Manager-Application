@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import tempData from '../tempData';
 import Categories from '../components/Categories';
 import AddCategory from './AddCategory';
+import Summary from '../components/Summary';
 
 class HomePage extends React.Component {
     state= {
@@ -54,7 +55,13 @@ class HomePage extends React.Component {
                     </View>
                 </View>
                 <View>
-                    <Text style= {{ color: 'navy', fontSize: 20}}>Summary</Text>
+                    <Text style= {{ color: 'navy', fontSize: 20, paddingBottom: 20}}>Summary</Text>
+                    <View style = {styles.summary}>
+                        <Summary iconName = 'calendar-check-o' color = "blue" title = 'Today' list = {this.state.lists}/>
+                        <Summary title = 'Priority' color = "gold" iconName = 'star' list = {this.state.lists}/>
+                        <Summary title = 'Completed' iconName = 'check' color = "green" list = {this.state.lists}/>
+                        <Summary title = 'Scheduled' iconName = 'calendar-o' list = {this.state.lists}/>
+                    </View>
                 </View>
                 <View style = {{position: 'absolute', bottom: 20, right: 20}}>
                     <TouchableOpacity style = {styles.addCat} onPress = {() => this.toggleModal()}>
@@ -99,5 +106,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: 'lightblue',
         fontWeight: 'bold'
+    },
+
+    summary: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        gap: 30
     }
 })

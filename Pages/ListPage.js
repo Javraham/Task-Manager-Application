@@ -1,10 +1,8 @@
 import React, { createRef, useEffect, useRef } from 'react';
 import {useState} from 'react'
 import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity, FlatList, ScrollView, VirtualizedList, KeyboardAvoidingView, Button} from 'react-native';
-import TodoInput from '../components/customInput';
 import TodoInputClass from '../components/inputClass';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import tempData from '../tempData';
 
 
 class TodoScreen extends React.Component {
