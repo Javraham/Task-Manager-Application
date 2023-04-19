@@ -35,9 +35,12 @@ class HomePage extends React.Component {
                 <Modal animationType='slide' visible = {this.state.addCategory} onRequestClose={this.state.addCategory}>
                     <AddCategory close = {() => this.toggleModal()} add = {this.addCategory}/>
                 </Modal>
-                <Text style = {styles.title}>Task Lists</Text>
-                <View style = {{paddingLeft: 20, gap: 20, height: '20%'}}>
-                    <Text style= {{ color: 'white', fontSize: 20}}>List Category</Text>
+                <View>
+                    <Text style = {styles.title}>Good Afternoon,</Text>
+                    <Text style = {styles.name}>Jonathan Avraham</Text>
+                </View>
+                <View style = {{ gap: 20, height: '20%'}}>
+                    <Text style= {{ color: 'navy', fontSize: 20}}>List Category</Text>
                     <View>
                         <FlatList
                             data={this.state.lists}
@@ -50,7 +53,8 @@ class HomePage extends React.Component {
                         />
                     </View>
                 </View>
-                <View style = {styles.info}>
+                <View>
+                    <Text style= {{ color: 'navy', fontSize: 20}}>Summary</Text>
                 </View>
                 <View style = {{position: 'absolute', bottom: 20, right: 20}}>
                     <TouchableOpacity style = {styles.addCat} onPress = {() => this.toggleModal()}>
@@ -68,14 +72,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'space-around',
-        alignItems: 'center'
+        marginHorizontal: 12,
     },
 
     title: {
         fontSize: 35,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: 'white'
+        fontWeight: '200',
+        color: 'navy'
     },
 
     addCat: {
@@ -85,10 +88,16 @@ const styles = StyleSheet.create({
     },
 
     info: {
-        height: '40%',
-        width: '80%',
-        backgroundColor: 'lightblue',
+        height: '45%',
+        width: '100%',
+        backgroundColor: 'white',
         borderRadius: 50,
         justifyContent: 'center',
+    },
+
+    name: {
+        fontSize: 20,
+        color: 'lightblue',
+        fontWeight: 'bold'
     }
 })

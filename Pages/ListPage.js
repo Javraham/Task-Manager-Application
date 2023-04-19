@@ -12,12 +12,13 @@ class TodoScreen extends React.Component {
     state = {
         viewDelete: false,
         emptylist: this.props.list.todo.length > 0 ? false: true,
+        newTodo: '',
     }
 
 
     addItem = () => {
-        this.setState({emptylist: false});
-        this.props.list.todo.push({name: '', completed: false})
+        this.setState({emptylist: false, newTodo: ''});
+        this.props.list.todo.push({name: this.state.newTodo, completed: false, key: this.props.list.todo.length})
         console.log(this.props.list)
         this.props.updateList(this.props.list)
     }
@@ -32,9 +33,8 @@ class TodoScreen extends React.Component {
     }
 
     handleInput = (text, index) => {
-        let list = this.props.list
-        console.log(index)
         index.name = text
+        console.log(this.props.list.todo)
     }
 
     toggleCompleted(index) {
@@ -48,7 +48,7 @@ class TodoScreen extends React.Component {
         list = this.props.list
         return (
             <SafeAreaView style = {styles.container}>
-                <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
                     <Text style = {[styles.title, {color: list.color}]}>{list.category}</Text>
                     <Button title={this.state.viewDelete ? 'Done': 'Edit'} onPress={() => {if(list.todo.length > 0) this.setState({viewDelete: !this.state.viewDelete})}}/>
                     <Button title='Close' onPress={this.props.close}/>
@@ -57,7 +57,7 @@ class TodoScreen extends React.Component {
                 <View style = {{width: '100%', height: '90%'}}>
                 <FlatList
                     data={list.todo}
-                    keyExtractor={item => item.name}
+                    keyExtractor={item => item.key}
                     renderItem={({item, index}) => (
                     <View style = {{flexDirection: 'row'}}>
                         <TouchableOpacity 
@@ -65,7 +65,7 @@ class TodoScreen extends React.Component {
                             {item.completed  && <Icon name = 'check-circle' size = {26} color = 'green' />}
                         </TouchableOpacity>
                         <TodoInputClass
-                            defaultValue = {item.name} 
+                            defaultValue= {item.name}
                             onChangeText = {text => this.handleInput(text, item)} 
                             deleteInput = {() => {if(item.name == "") this.handleDelete(index)}}
                         />

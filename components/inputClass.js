@@ -8,7 +8,7 @@ function TodoInputClass({deleteInput = () => {}, ...props}) {
     
     return (
         <View style = {styles.input}>
-             <TextInput  maxLength = {30} onFocus = {() => setFocus(true)} {...props} autoFocus = {false}
+             <TextInput  maxLength = {30} onFocus = {() => setFocus(true)} {...props} autoFocus = {true}
               onBlur = {() => {
                 setFocus(false) 
                 deleteInput()}}

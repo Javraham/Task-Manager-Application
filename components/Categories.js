@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Modal, SafeAreaView} from 'react-native'
+import {View, Text, StyleSheet, TouchableOpacity, Modal, SafeAreaView, TouchableHighlight} from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import TodoScreen from '../Pages/ListPage';
 import TodoModal from '../Pages/TodoModal';
@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 15,
         marginHorizontal: 10,
+        
     },
 
     cat: {
