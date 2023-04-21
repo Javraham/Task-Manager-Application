@@ -37,6 +37,18 @@ function TodayTasks(props) {
     }
     const percent = props.list.todo.length != 0 ? Math.floor(completedTasks.length/props.list.todo.length*100) : 0
 
+    const renderItems = () => {
+        const item = props.list.todo.filter((value, index) => index < 3)
+        return item.map((value, index) => {
+            return (
+                <View key={index} style = {{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
+                    <Icon name = {value.completed ? 'circle' : 'circle-o'}/>
+                    <Text>{value.name}</Text>
+                </View>
+            )
+        })
+    }
+
     return (
         <View>
             <Modal visible = {showList} onRequestClose={() => toggleShow()} animationType='slide'>
@@ -44,11 +56,14 @@ function TodayTasks(props) {
             </Modal>
             <Pressable onPress={() => toggleShow() } style = {styles.container}>
                 <View style = {{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <View>
+                    <View style = {{gap: 5}}>
                         <Text style = {{fontSize: 25, fontWeight: 600}}>Todays Tasks</Text>
-                        <View style = {{flexDirection: 'row', padding: 5, alignItems: 'center', gap: 3}}>
+                        <View style = {{flexDirection: 'row', alignItems: 'center', gap: 3}}>
                             <Icon name = 'calendar'/>
                             <Text>{month} {date.getDate()}, {date.getFullYear()} </Text>
+                        </View>
+                        <View>
+                            {renderItems()}
                         </View>
                     </View>
                     <View style = {{justifyContent: 'center', alignItems: 'center'}}>
@@ -66,7 +81,7 @@ function TodayTasks(props) {
                     </View>
                 </View>
                 <View>
-                    <Text style = {{textAlign: 'center', fontSize: 18}}>{completedTasks.length} of {props.list.todo.length} Tasks Completed</Text>
+                    <Text style = {{textAlign: 'center', fontSize: 18, padding: 5}}>{completedTasks.length} of {props.list.todo.length} Tasks Completed</Text>
                 </View>
             </Pressable>
         </View> 

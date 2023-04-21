@@ -12,52 +12,30 @@ function Summary(props) {
 
 
     switch(props.title){
-        case 'Today': percentage = () => todayCompleted(); break;
         case 'Priority': percentage = () => priorityCompleted(); break;
         case 'Completed': percentage = () => Completed(); break;
-        case 'Scheduled': percentage = () => Scheduled(); break;
         default: percentage = () => {return 0};
     }
 
-
-    const todayCompleted = () => {
-        const list = props.list.find(value => {
-            return value.category === 'Todays List'
-        })
-        const numCompleted = list.todo.reduce((total, value) => {
-            if(value.completed){
-                return total + 1
-            } else{
-                return total
-            }
-        }, 0)
-
-        percent = list.todo.length != 0 ? Math.floor(numCompleted/list.todo.length*100) : 0
-        return percent ?? 0
-    }
 
     const priorityCompleted = () => {
         return 60
     }
 
     const Completed = () => {
-        const hasCompleted = []
         const todos = props.list.map(value => {
             return value.todo
         })
-        todos.forEach(element => {
-            element.map(value => {
-                hasCompleted.push(value.completed)
+        const todo = todos.map(element => {
+            return element.every(value => {
+                return value.completed
             })
-        });
-        const completed = hasCompleted.filter(value => value)
-        percent = Math.floor(completed.length/hasCompleted.length*100)
+        })
+        const completed = todo.filter((value) => value)
+        percent = Math.floor(completed.length/props.list.length*100)
         return percent ?? 0
     }
 
-    const Scheduled = () => {
-        return 50
-    }
 
     return (
         <View style = {styles.container}>

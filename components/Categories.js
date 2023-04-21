@@ -8,9 +8,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ProgressBar from './ProgressBar';
 
 
-
 function Categories({navigation, list, updateList}) {
     const [showList, setShow] = useState(false)
+    const [isPriority, setPriority] = useState(false)
     const completedTasks = list.todo.filter(todo => todo.completed == true)
 
     const toggleShow = () => {
@@ -27,9 +27,14 @@ function Categories({navigation, list, updateList}) {
             </Modal>
                 <View style = {styles.container}>
                     <View style = {[styles.TopCon, {backgroundColor: list.color}]}>
-                        <Pressable  style = {styles.add} onPress={() => toggleShow()}>
-                            <Icon name = 'plus' size ={15} color = 'white'/>
-                        </Pressable>
+                        <View style = {{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                            <Pressable  style = {styles.add} onPress={() => toggleShow()}>
+                                <Text style = {{color: 'white'}}>Edit</Text>
+                            </Pressable>
+                            <Pressable onPress = {() => setPriority(!isPriority)}>
+                                <Icon name = {isPriority ? 'star' : 'star-o'} size ={25} color = {isPriority ? 'gold' : 'white'}/>
+                            </Pressable>
+                        </View>
                         <Text style = {styles.cat} numberOfLines={2}>{list.category}</Text>
                         <Text style = {{color: 'white'}}>{list.todo.length} Tasks</Text>
                     </View>
@@ -60,11 +65,8 @@ const styles = StyleSheet.create({
     add: {
         borderWidth: 1,
         borderColor: 'white',
-        width: 27,
-        height: 27,
         borderRadius: 5,
-        justifyContent: 'center',
-        alignItems: 'center'
+        padding: 5
     },
 
     progressCon: {

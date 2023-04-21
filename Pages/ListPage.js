@@ -21,7 +21,6 @@ class TodoScreen extends React.Component {
         this.props.updateList(this.props.list)
     }
 
-
     handleDelete = (index) => {
         this.props.list.todo.splice(index, 1)
         this.props.updateList(this.props.list)
@@ -40,7 +39,6 @@ class TodoScreen extends React.Component {
         this.props.updateList(list)
     }
 
-    
     render(){
         list = this.props.list
         return (
@@ -86,7 +84,7 @@ class TodoScreen extends React.Component {
                 }
                 <TouchableOpacity onPress = {() => this.addItem()} style = {styles.addItem}>
                     <Icon name = 'plus-circle' color = 'orange' size={35}/>
-                    <Text style = {{fontWeight: 'bold', color: 'orange', fontSize: 30}}>List Item</Text>
+                    <Text style = {{fontWeight: 'bold', color: 'orange', fontSize: 30}}>Task</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         )
