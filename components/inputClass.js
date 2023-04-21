@@ -3,12 +3,12 @@ import {useState} from 'react';
 import { TextInput, View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-function TodoInputClass({deleteInput = () => {}, ...props}) {
+function TodoInputClass({deleteInput = () => {}, auto, ...props}) {
     const [focus, setFocus] = useState(false)
     
     return (
         <View style = {styles.input}>
-             <TextInput  maxLength = {30} onFocus = {() => setFocus(true)} {...props} autoFocus = {true}
+             <TextInput  maxLength = {30} onFocus = {() => setFocus(true)} {...props} autoFocus = {auto}
               onBlur = {() => {
                 setFocus(false) 
                 deleteInput()}}

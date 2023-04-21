@@ -1,15 +1,14 @@
-import React from 'react';
-import { View,Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View,Text, StyleSheet, Dimensions, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Svg, {Circle} from 'react-native-svg'
 
 function Summary(props) {
-    let percentage;
     const size = 60;
-    const strokeWidth = 2.5;
+    const strokeWidth = 4;
     const center = size/2;
     const radius = size/2 - strokeWidth/2;
-    const circumference = 2*Math.PI*radius 
+    const circumference = 2*Math.PI*radius
 
 
     switch(props.title){
@@ -19,6 +18,7 @@ function Summary(props) {
         case 'Scheduled': percentage = () => Scheduled(); break;
         default: percentage = () => {return 0};
     }
+
 
     const todayCompleted = () => {
         const list = props.list.find(value => {
@@ -32,7 +32,7 @@ function Summary(props) {
             }
         }, 0)
 
-        percent = Math.floor(numCompleted/list.todo.length*100)
+        percent = list.todo.length != 0 ? Math.floor(numCompleted/list.todo.length*100) : 0
         return percent ?? 0
     }
 
@@ -41,14 +41,24 @@ function Summary(props) {
     }
 
     const Completed = () => {
-        return 30
+        const hasCompleted = []
+        const todos = props.list.map(value => {
+            return value.todo
+        })
+        todos.forEach(element => {
+            element.map(value => {
+                hasCompleted.push(value.completed)
+            })
+        });
+        const completed = hasCompleted.filter(value => value)
+        percent = Math.floor(completed.length/hasCompleted.length*100)
+        return percent ?? 0
     }
 
     const Scheduled = () => {
         return 50
     }
 
-    console.log(circumference)
     return (
         <View style = {styles.container}>
             <View style = {{gap: 10}}>
@@ -57,9 +67,9 @@ function Summary(props) {
             </View>
             <View style = {{justifyContent: 'center', alignItems: 'center'}}>
                 <Svg height={size} width={size}>
-                    <Circle cx={center} cy={center} r={radius} stroke="white" strokeWidth={strokeWidth} />
+                    <Circle cx={center} cy={center} r={radius} stroke="#F9F9F9" strokeWidth={strokeWidth} />
                     <Circle 
-                        cx={center} cy={center} r={radius} stroke={props.color ?? 'black'} 
+                        cx={center} cy={center} r={radius} stroke={props.color} 
                         strokeWidth={strokeWidth} strokeDasharray={circumference}
                         strokeDashoffset={circumference*(1-percentage()/100)}
                         />
@@ -77,8 +87,8 @@ export default Summary;
 
 const styles = StyleSheet.create({
     container: {
-        width: '40%',
-        backgroundColor: '#EEEEEE',
+        width: '45%',
+        backgroundColor: '#e5e5e5',
         padding: 10,
         borderRadius: 10,
         flexDirection: 'row',

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Text, View , StyleSheet, TouchableOpacity, SafeAreaView, TextInput, KeyboardAvoidingView} from 'react-native';
+import { Text, View , StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Pressable} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import tempData from '../tempData';
 
 
 function AddCategory(props){
-    const BGcolor = ['#FAAB78', '#7FE9DE', '#E97777', '#7FB77E', '#B2A4FF', '#40DFEF']
+    const BGcolor = ['#FAAB78', '#7FE9DE', '#E97777', '#7FB77E', '#B2A4FF', '#40DFEF', '#C3FF99', '#FF87B2']
     const [text, setText] = useState('');
     const [color, setColor] = useState(BGcolor[0])
+    const [error, setError] = useState(false)
 
     const renderColor = () => {
         return BGcolor.map((color) => {
@@ -21,10 +22,15 @@ function AddCategory(props){
 
     }
 
-    const createCategory = () => {
-        props.add({category: text, color: color, todo: []})
-        setText('')
-        props.close();
+    const createCategory = (text) => {
+        if (text.length === 0){
+            setError(true)
+        }
+        else{
+            props.add({category: text, color: color, todo: []})
+            setText('')
+            props.close();
+        }
     }
 
     return (
@@ -35,12 +41,18 @@ function AddCategory(props){
                 </TouchableOpacity>
             </View>
             <View style = {{gap: 20, width: '80%'}}>
-                <Text style = {styles.header}>Add List Category</Text>
-                <TextInput placeholder='add todo...' style = {styles.input} onChangeText={text => setText(text)}/>
+                <Text style = {styles.header}>Add Project</Text>
+                <View>
+                    <TextInput maxLength = {12} placeholder='add todo...' style = {styles.input} onChangeText={text => setText(text)}/>
+                    {error && <View style = {{flexDirection: 'row', gap: 5, paddingTop: 5, alignItems: 'center'}}>
+                                <Icon name = 'exclamation-triangle' color = {'red'}/>
+                                <Text style = {{color: 'red'}}>Please enter a project name</Text>
+                            </View>}
+                </View>
                 <View style = {styles.color}>
                     {renderColor()}
                 </View>
-                <TouchableOpacity style = {[styles.button, {backgroundColor: color}]} onPress = {() => createCategory()}>
+                <TouchableOpacity style = {[styles.button, {backgroundColor: color}]} onPress = {() => createCategory(text)}>
                     <Text style = {{textAlign: 'center', fontWeight: 'bold'}}>Create</Text>
                 </TouchableOpacity>
             </View>

@@ -11,13 +11,13 @@ class TodoScreen extends React.Component {
         viewDelete: false,
         emptylist: this.props.list.todo.length > 0 ? false: true,
         newTodo: '',
+        focus: false
     }
 
 
     addItem = () => {
-        this.setState({emptylist: false, newTodo: ''});
+        this.setState({emptylist: false, newTodo: '', focus: true});
         this.props.list.todo.push({name: this.state.newTodo, completed: false, key: this.props.list.todo.length})
-        console.log(this.props.list)
         this.props.updateList(this.props.list)
     }
 
@@ -32,15 +32,14 @@ class TodoScreen extends React.Component {
 
     handleInput = (text, index) => {
         index.name = text
-        console.log(this.props.list.todo)
     }
 
     toggleCompleted(index) {
         let list = this.props.list;
         list.todo[index].completed = !list.todo[index].completed
         this.props.updateList(list)
-        console.log(list)
     }
+
     
     render(){
         list = this.props.list
@@ -48,8 +47,10 @@ class TodoScreen extends React.Component {
             <SafeAreaView style = {styles.container}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
                     <Text style = {[styles.title, {color: list.color}]}>{list.category}</Text>
-                    <Button title={this.state.viewDelete ? 'Done': 'Edit'} onPress={() => {if(list.todo.length > 0) this.setState({viewDelete: !this.state.viewDelete})}}/>
-                    <Button title='Close' onPress={this.props.close}/>
+                    <View style = {{flexDirection: 'row'}}>
+                        <Button title={this.state.viewDelete ? 'Done': 'Edit'} onPress={() => {if(list.todo.length > 0) this.setState({viewDelete: !this.state.viewDelete})}}/>
+                        <Button title='Close' onPress={this.props.close}/>
+                    </View>
                 </View>
                 {!this.state.emptylist && <KeyboardAvoidingView behavior= {Platform.OS === 'ios' ? 'padding' : 'height'} style = {{flex: 1}}>
                 <View style = {{width: '100%', height: '90%'}}>
@@ -66,6 +67,7 @@ class TodoScreen extends React.Component {
                             defaultValue= {item.name}
                             onChangeText = {text => this.handleInput(text, item)} 
                             deleteInput = {() => {if(item.name == "") this.handleDelete(index)}}
+                            auto = {this.state.focus}
                         />
                         {this.state.viewDelete &&
                         <TouchableOpacity onPress = {() => this.handleDelete(index)}>
