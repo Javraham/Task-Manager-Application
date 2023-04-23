@@ -40,7 +40,7 @@ function Categories({navigation, list, updateList}) {
                     </View>
                     <View style = {styles.progressCon}>
                         <Text style = {{textAlign: 'right', fontSize: 20, fontWeight: 600}}>{percent}%</Text>
-                        <ProgressBar color = {list.color} percent={percent+'%'}/>
+                        <ProgressBar color = {list.color} percent={percent}/>
                     </View>
                 </View>
         </View>

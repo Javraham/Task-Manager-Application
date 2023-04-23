@@ -1,10 +1,25 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import { View, StyleSheet, Animated } from 'react-native';
 
 function ProgressBar(props) {
+    const animate = useRef(new Animated.Value(0)).current
+
+    useEffect(() => {
+        Animated.timing(animate, {
+            toValue: props.percent,
+            duration: 2000,
+            useNativeDriver: false
+        }).start();
+    }, [props.percent])
+
+    const progress = animate.interpolate({
+        inputRange: [0, props.percent],
+        outputRange: ["0%", props.percent+'%']
+    })
+
     return (
         <View style = {styles.bar}>
-            <View style = {[styles.progress, {width: props.percent, backgroundColor: props.color}]}/>
+            <Animated.View style = {[styles.progress, {width: progress, backgroundColor: props.color}]}/>
         </View>
     );
 }

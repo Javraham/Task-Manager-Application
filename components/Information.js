@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable,  Modal} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Pressable,  Modal, Animated} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import TodoScreen from '../Pages/ListPage';
 import Svg, {Circle} from 'react-native-svg'
+
 
 
 function TodayTasks(props) {
@@ -15,6 +16,9 @@ function TodayTasks(props) {
     const date = new Date();
     const [showList, setShow] = useState(false)
     const completedTasks = props.list.todo.filter(todo => todo.completed == true)
+    const animate = useRef(new Animated.Value(0)).current;
+    const progress = useRef(null)
+
 
     const toggleShow = () => {
         setShow(!showList)
@@ -37,12 +41,29 @@ function TodayTasks(props) {
     }
     const percent = props.list.todo.length != 0 ? Math.floor(completedTasks.length/props.list.todo.length*100) : 0
 
+    useEffect(() => {
+        Animated.timing(animate, {
+            toValue: percent,
+            duration: 2000,
+            useNativeDriver: true
+        }).start();
+    }, [percent]);
+
+    useEffect(() => {
+        animate.addListener(value => {
+            const strokeDashoffset = circumference*(1-(value.value/100))
+            if(progress?.current){
+                progress.current.setNativeProps({strokeDashoffset})
+            }
+        }) 
+    }, [percent]);
+
     const renderItems = () => {
         const item = props.list.todo.filter((value, index) => index < 3)
         return item.map((value, index) => {
             return (
                 <View key={index} style = {{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
-                    <Icon name = {value.completed ? 'circle' : 'circle-o'}/>
+                    <Icon name = {value.completed ? 'check-circle' : 'circle-o'}/>
                     <Text>{value.name}</Text>
                 </View>
             )
@@ -69,10 +90,10 @@ function TodayTasks(props) {
                     <View style = {{justifyContent: 'center', alignItems: 'center'}}>
                         <Svg height={size} width={size}>
                             <Circle cx={center} cy={center} r={radius} stroke="#F9F9F9" strokeWidth={strokeWidth} />
-                            <Circle 
+                            <Circle
+                                ref={progress}
                                 cx={center} cy={center} r={radius} stroke={'#B1D7B4'} 
                                 strokeWidth={strokeWidth} strokeDasharray={circumference}
-                                strokeDashoffset={circumference*(1-(percent/100))}
                                 />
                         </Svg>
                         <View style = {{position: 'absolute'}}>
