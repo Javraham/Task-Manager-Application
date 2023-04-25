@@ -27,13 +27,13 @@ function Summary(props) {
             return value.todo
         })
         const todo = todos.map(element => {
-            return element.every(value => {
+            return element.length != 0 ? element.every(value => {
                 return value.completed
-            })
+            }) : false
         })
         const completed = todo.filter((value) => value)
         percent = Math.floor(completed.length/props.list.length*100)
-        return percent ?? 0
+        return isNaN(percent) ? 0 : percent
     }
 
 

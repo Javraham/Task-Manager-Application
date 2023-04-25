@@ -11,20 +11,9 @@ import TodayTasks from '../components/Information';
 
 const Today = {
     category: 'Todays List',
-    color: '#E3DFFD',
+    color: 'black',
     id: 1,
-    todo: [
-        {
-            name: 'Go to Mall',
-            completed: true,
-            key: 0
-        },
-        {
-            name: 'Go to Eat',
-            completed: false,
-            key: 1
-        },
-    ]
+    todo: []
 }
 
 class HomePage extends React.Component {
@@ -43,15 +32,31 @@ class HomePage extends React.Component {
     }
 
     updateList = list => {
-        this.setState({
+        if(list.category === 'Todays List'){
+            this.setState({today: list})
+        }
+        else{
+            this.setState({
             lists: this.state.lists.map(item => {
                 return item.id === list.id ? list : item
             })
-        })
+            })
+        }
+    }
+
+    renderEmptyList() {
+        if(this.state.lists.length === 0){
+            return (
+                <View style = {{justifyContent: 'center', height: '100%', alignItems: 'center'}}>
+                    <Text style = {{fontSize: 20, color: 'grey'}}>Click Icon to Add Project</Text>
+                </View>
+            )
+        }
     }
 
     render(){
         const {navigation} = this.props
+        console.log(this.state.lists)
         return (
             <SafeAreaView style = {styles.container}>
                 <Modal animationType='slide' visible = {this.state.addCategory} onRequestClose={this.state.addCategory}>
@@ -72,6 +77,7 @@ class HomePage extends React.Component {
                         </TouchableOpacity>
                     </View>
                     <View>
+                        {this.renderEmptyList()}
                         <FlatList
                             data={this.state.lists}
                             keyExtractor={item => item.id}
