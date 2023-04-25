@@ -10,7 +10,6 @@ import ProgressBar from './ProgressBar';
 
 function Categories({navigation, list, updateList}) {
     const [showList, setShow] = useState(false)
-    const [isPriority, setPriority] = useState(false)
     const completedTasks = list.todo.filter(todo => todo.completed == true)
 
     const toggleShow = () => {
@@ -18,21 +17,18 @@ function Categories({navigation, list, updateList}) {
     }
 
     const percent = list.todo.length != 0 ? Math.floor(completedTasks.length/list.todo.length*100) : 0
-    
 
     return (
         <View>
             <Modal visible = {showList} onRequestClose={() => toggleShow()} animationType='slide'>
                 <TodoScreen list = {list} close = {() => toggleShow()} updateList = {updateList}/>
             </Modal>
-                <View style = {styles.container}>
+                <Pressable style = {styles.container} onPress={() => toggleShow()} >
                     <View style = {[styles.TopCon, {backgroundColor: list.color}]}>
                         <View style = {{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                            <Pressable  style = {styles.add} onPress={() => toggleShow()}>
-                                <Text style = {{color: 'white'}}>Edit</Text>
-                            </Pressable>
-                            <Pressable onPress = {() => setPriority(!isPriority)}>
-                                <Icon name = {isPriority ? 'star' : 'star-o'} size ={25} color = {isPriority ? 'gold' : 'white'}/>
+                            <Icon name = {list.icon} size ={25} color = {'white'}/>   
+                            <Pressable>
+                                <Icon name='info-circle' color = 'white' size={20}/>
                             </Pressable>
                         </View>
                         <Text style = {styles.cat} numberOfLines={2}>{list.category}</Text>
@@ -42,7 +38,7 @@ function Categories({navigation, list, updateList}) {
                         <Text style = {{textAlign: 'right', fontSize: 20, fontWeight: 600}}>{percent}%</Text>
                         <ProgressBar color = {list.color} percent={percent}/>
                     </View>
-                </View>
+                </Pressable>
         </View>
     );
 }

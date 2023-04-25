@@ -64,7 +64,7 @@ function TodayTasks(props) {
             return (
                 <View key={index} style = {{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
                     <Icon name = {value.completed ? 'check-circle' : 'circle-o'}/>
-                    <Text>{value.name}</Text>
+                    <Text numberOfLines = {1} style = {{width: '60%'}}>{value.name}</Text>
                 </View>
             )
         })

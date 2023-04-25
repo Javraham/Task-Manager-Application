@@ -1,13 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, Modal, Button } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import tempData from '../tempData';
 import Categories from '../components/Categories';
 import AddCategory from './AddCategory';
 import Summary from '../components/Summary';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TodayTasks from '../components/Information';
+
 
 const Today = {
     category: 'Todays List',
@@ -19,9 +17,13 @@ const Today = {
 class HomePage extends React.Component {
     state= {
         addCategory: false,
-        lists: tempData,
+        lists: [],
         today: Today
     }
+
+    // componentDidMount(){
+    //     const q = 
+    // }
 
     toggleModal() {
         this.setState({addCategory: !this.state.addCategory})
@@ -93,7 +95,7 @@ class HomePage extends React.Component {
                     <Text style= {{ color: 'navy', fontSize: 20, paddingBottom: 20, fontWeight: 500}}>Summary</Text>
                     <View style = {styles.summary}>
                         <Summary title = 'Completed' iconName = 'check' color = "green" list = {this.state.lists}/>
-                        <Summary title = 'Priority' color = "gold" iconName = 'star' list = {this.state.lists}/>           
+                        <Summary title = 'Priority' color = "gold" iconName = 'star-o' list = {this.state.lists}/>           
                     </View>
                 </View>
             </SafeAreaView>

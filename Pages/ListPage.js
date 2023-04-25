@@ -1,6 +1,7 @@
 import React, { createRef, useEffect, useRef } from 'react';
 import {useState} from 'react'
-import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity, FlatList, ScrollView, VirtualizedList, KeyboardAvoidingView, Button} from 'react-native';
+import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity, 
+    FlatList, ScrollView, VirtualizedList, KeyboardAvoidingView, Button, TextInput} from 'react-native';
 import TodoInputClass from '../components/inputClass';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -44,11 +45,9 @@ class TodoScreen extends React.Component {
         return (
             <SafeAreaView style = {styles.container}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
-                    <Text style = {[styles.title, {color: list.color}]}>{list.category}</Text>
-                    <View style = {{flexDirection: 'row'}}>
-                        <Button title={this.state.viewDelete ? 'Done': 'Edit'} onPress={() => {if(list.todo.length > 0) this.setState({viewDelete: !this.state.viewDelete})}}/>
-                        <Button title='Close' onPress={this.props.close}/>
-                    </View>
+                    <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' color={list.color} size = {20}/></TouchableOpacity>
+                    <Text style = {[styles.title, {color: list.color}]} numberOfLines={1}>{list.category}</Text>
+                    <Button title={this.state.viewDelete ? 'Done': 'Edit'} onPress={() => {if(list.todo.length > 0) this.setState({viewDelete: !this.state.viewDelete})}}/>
                 </View>
                 {!this.state.emptylist && <KeyboardAvoidingView behavior= {Platform.OS === 'ios' ? 'padding' : 'height'} style = {{flex: 1}}>
                 <View style = {{width: '100%', height: '90%'}}>
@@ -56,17 +55,16 @@ class TodoScreen extends React.Component {
                     data={list.todo}
                     keyExtractor={item => item.key}
                     renderItem={({item, index}) => (
-                    <View style = {{flexDirection: 'row'}}>
+                    <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center', marginBottom: 30}}>
                         <TouchableOpacity 
-                            style = {[styles.button, {borderWidth: item.completed ? null : 1}]} onPress={() => this.toggleCompleted(index)}>
-                            {item.completed  && <Icon name = 'check-circle' size = {26} color = 'green' />}
+                            onPress={() => this.toggleCompleted(index)}>
+                            <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
                         </TouchableOpacity>
-                        <TodoInputClass
-                            defaultValue= {item.name}
+                        <TextInput  maxLength = {40} autoFocus = {this.state.focus}
+                            onBlur = {() => {if(item.name == "") this.handleDelete(index)}}
                             onChangeText = {text => this.handleInput(text, item)} 
-                            deleteInput = {() => {if(item.name == "") this.handleDelete(index)}}
-                            auto = {this.state.focus}
-                        />
+                            defaultValue =  {item.name}
+                            style = {{ fontSize: 16, flexGrow: 1}} />
                         {this.state.viewDelete &&
                         <TouchableOpacity onPress = {() => this.handleDelete(index)}>
                             <Icon name = 'minus-circle' size = {25} color = "red"/>
@@ -78,13 +76,13 @@ class TodoScreen extends React.Component {
                 </KeyboardAvoidingView>
                 }
                 {this.state.emptylist &&
-                    <View>
-                        <Text style = {{textAlign: 'center', fontSize: 20, color: 'grey'}}>Currently No Added Items</Text>
+                    <View style = {{alignItems: 'center'}}>
+                        <Icon name = {list.icon} size={50} color={list.color}/>
                     </View>
                 }
                 <TouchableOpacity onPress = {() => this.addItem()} style = {styles.addItem}>
-                    <Icon name = 'plus-circle' color = 'orange' size={35}/>
-                    <Text style = {{fontWeight: 'bold', color: 'orange', fontSize: 30}}>Task</Text>
+                    <Icon name = 'plus-circle' color = {list.color} size={35}/>
+                    <Text style = {{fontWeight: 'bold', color: list.color, fontSize: 30}}>New Task</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         )
@@ -102,9 +100,10 @@ const styles = StyleSheet.create({
     },
 
     title: {
-        fontSize: 35,
+        fontSize: 25,
         fontWeight: 'bold',
         padding: 10,
+        width: '70%'
     },
 
     addItem: {
