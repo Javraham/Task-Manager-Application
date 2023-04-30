@@ -10,7 +10,7 @@ function Summary(props) {
         case 'Completed': percentage = () => Completed(); break;
         default: percentage = () => {return 0};
     }
-
+    
 
     const All = () => {
         return 3
@@ -18,9 +18,11 @@ function Summary(props) {
 
     const Completed = () => {
         const isCompleted = []
+        
         const todos = props.list.map(value => {
             return value.todo
         })
+
         todos.forEach(element => {
             element.forEach(value => {
                 isCompleted.push(value.completed)

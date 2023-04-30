@@ -1,24 +1,28 @@
 import React, { createRef, useEffect, useRef } from 'react';
 import {useState} from 'react'
 import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity, 
-    FlatList, ScrollView, VirtualizedList, KeyboardAvoidingView, Button, TextInput} from 'react-native';
+    FlatList, KeyboardAvoidingView, Button, TextInput, Animated, Alert, Keyboard} from 'react-native';
 import TodoInputClass from '../components/inputClass';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Swipeable } from 'react-native-gesture-handler';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 
 class TodoScreen extends React.Component {
-    
-    state = {
-        viewDelete: false,
-        emptylist: this.props.list.todo.length > 0 ? false: true,
-        newTodo: '',
-        focus: false
+    constructor(props){
+        super(props);
+        this.state = {
+            emptylist: this.props.list.todo.length > 0 ? false: true,
+            focus: false
+        }
+        this.ref = createRef();
+        this.closeRef = createRef();
     }
 
 
     addItem = () => {
-        this.setState({emptylist: false, newTodo: '', focus: true});
-        this.props.list.todo.push({name: this.state.newTodo, completed: false, key: this.props.list.todo.length})
+        this.setState({emptylist: false, focus: true});
+        this.props.list.todo.push({name: '', completed: false})
         this.props.updateList(this.props.list)
     }
 
@@ -26,7 +30,7 @@ class TodoScreen extends React.Component {
         this.props.list.todo.splice(index, 1)
         this.props.updateList(this.props.list)
         if(this.props.list.todo.length == 0){
-            this.setState({emptylist: true, viewDelete: false})
+            this.setState({emptylist: true})
         }
     }
 
@@ -40,37 +44,88 @@ class TodoScreen extends React.Component {
         this.props.updateList(list)
     }
 
+    rightView(drag, index){
+        const opacity = drag.interpolate({
+            inputRange: [-100, -50, -40, -30, 0],
+            outputRange: [1, 0.6, 0.4, 0.2, 0],
+            extrapolate: 'clamp'
+        })
+        return (
+            <TouchableOpacity onPress={()=> this.deleteItem(index)}>
+                <Animated.View style = {[styles.delete, {opacity: opacity}]}>
+                    <Icon name = 'trash' color = 'white' size ={25} style = {{paddingHorizontal: 30}}/>
+                </Animated.View>
+            </TouchableOpacity>
+        )
+    }
+
+    deleteItem = (index) => {
+        this.handleDelete(index)
+        this.closeDelete
+    }
+
+    closeDelete = () => {
+        this.closeRef.current.close()
+    }
+
+    alertDelete = () =>
+    Alert.alert('Are you sure you want to delete ' + this.props.list.category, 'This will delete all of its content', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+      },
+      {text: 'Delete', onPress: () => this.editList(), style: 'destructive'},
+    ]);
+
+    editList(){
+        this.props.deleteList(this.props.list);
+        this.props.close();
+    }
+
+    checkInput = (item, index) => {
+        if(item.name == ""){
+            this.handleDelete(index);
+        }
+        else{
+            this.props.updateList(this.props.list)
+        }
+    }
+
     render(){
         list = this.props.list
         return (
             <SafeAreaView style = {styles.container}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
-                    <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' color={list.color} size = {20}/></TouchableOpacity>
+                    <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' color={list.color} size = {30}/></TouchableOpacity>
                     <Text style = {[styles.title, {color: list.color}]} numberOfLines={1}>{list.category}</Text>
-                    <Button title={this.state.viewDelete ? 'Done': 'Edit'} onPress={() => {if(list.todo.length > 0) this.setState({viewDelete: !this.state.viewDelete})}}/>
+                    <TouchableOpacity style = {[styles.edit, {borderColor: list.color}]} onPress={this.alertDelete} >
+                        <Ionicons name = 'ellipsis-horizontal' color = {list.color} size = {15}/>
+                    </TouchableOpacity>    
                 </View>
                 {!this.state.emptylist && <KeyboardAvoidingView behavior= {Platform.OS === 'ios' ? 'padding' : 'height'} style = {{flex: 1}}>
                 <View style = {{width: '100%', height: '90%'}}>
                 <FlatList
                     data={list.todo}
-                    keyExtractor={item => item.key}
+                    keyExtractor={(item, index) => index.toString()}
                     renderItem={({item, index}) => (
-                    <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center', marginBottom: 30}}>
-                        <TouchableOpacity 
-                            onPress={() => this.toggleCompleted(index)}>
-                            <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
-                        </TouchableOpacity>
-                        <TextInput  maxLength = {40} autoFocus = {this.state.focus}
-                            onBlur = {() => {if(item.name == "") this.handleDelete(index)}}
-                            onChangeText = {text => this.handleInput(text, item)} 
-                            defaultValue =  {item.name}
-                            style = {{ fontSize: 16, flexGrow: 1}} />
-                        {this.state.viewDelete &&
-                        <TouchableOpacity onPress = {() => this.handleDelete(index)}>
-                            <Icon name = 'minus-circle' size = {25} color = "red"/>
-                        </TouchableOpacity>
-                        }   
-                    </View>)}
+                    <Swipeable 
+                        renderRightActions={(_, drag) => this.rightView(drag, index)} 
+                        onSwipeableWillOpen={(right) => this.ref.current.blur()}
+                        ref = {this.closeRef}>
+                        <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center', paddingVertical: 15}}>
+                            <TouchableOpacity 
+                                onPress={() => this.toggleCompleted(index)}>
+                                <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
+                            </TouchableOpacity>
+                            <TextInput  maxLength = {40} autoFocus = {this.state.focus}
+                                onBlur = {() => this.checkInput(item, index)}
+                                onChangeText = {text => this.handleInput(text, item)} 
+                                defaultValue =  {item.name}
+                                style = {{ fontSize: 16, flexGrow: 1}} 
+                                ref = {this.ref}
+                                />                             
+                        </View>
+                    </Swipeable>)}
                 />
                 </View>
                 </KeyboardAvoidingView>
@@ -93,8 +148,7 @@ export default TodoScreen;
 
 const styles = StyleSheet.create({
     container: {
-        marginHorizontal: 20,
-        width: '90%',
+        marginLeft: 20,
         flex: 1,
         justifyContent: 'space-between'
     },
@@ -119,5 +173,26 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         borderColor: 'grey',
         marginRight: 5
+    },
+
+    delete: {
+        backgroundColor: '#E55451',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1
+    },
+
+    edit: {
+        borderWidth: 2, 
+        width: 24, 
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 12,
+        marginRight: 20
+    },
+
+    deleteList: {
+        color: 'red'
     }
 })

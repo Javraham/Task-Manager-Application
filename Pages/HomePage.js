@@ -5,45 +5,68 @@ import Categories from '../components/Categories';
 import AddCategory from './AddCategory';
 import Summary from '../components/Summary';
 import TodayTasks from '../components/Information';
-
+import {db} from '../firebase'
+import {query, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc} from 'firebase/firestore'
 
 const Today = {
     category: 'Todays List',
     color: 'black',
+    icon: 'calendar',
     id: 1,
     todo: []
 }
 
 class HomePage extends React.Component {
-    state= {
-        addCategory: false,
-        lists: [],
-        today: Today
+
+    constructor(props){
+        super(props)
+        this.state = {
+            addCategory: false,
+            lists: [],
+            today: Today
+        }
+        this.unsubscribe = null;
+        this.query = query(collection(db, 'lists'));
     }
 
-    // componentDidMount(){
-    //     const q = 
-    // }
+    componentDidMount(){
+        this.unsubscribe = onSnapshot(this.query, (querysnap) => {
+            let listArray = []
+            querysnap.forEach((doc) => {
+                listArray.push({...doc.data(), id: doc.id})
+            })
+            this.setState({lists: listArray})
+        })
+    }
+
+    componentWillUnmount() {
+        this.unsubscribe;
+    }
 
     toggleModal() {
         this.setState({addCategory: !this.state.addCategory})
     }
 
-    addCategory = list => {
-        this.setState({lists: [...this.state.lists, {...list, id: this.state.lists.length + 1}]})
+    addCategory = async (list) => {
+        const newCat = await addDoc(collection(db, 'lists'), {
+            category: list.category,
+            color: list.color,
+            icon: list.icon,
+            todo: list.todo
+        })
+
+        console.log(newCat.id)
     }
 
-    updateList = list => {
-        if(list.category === 'Todays List'){
-            this.setState({today: list})
-        }
-        else{
-            this.setState({
-            lists: this.state.lists.map(item => {
-                return item.id === list.id ? list : item
-            })
-            })
-        }
+    updateList = async (list) => {
+        const updated = doc(db, 'lists', list.id)
+        await updateDoc(updated, {
+            todo: list.todo
+        })
+    }
+
+    deleteList = async (list) => {
+        await deleteDoc(doc(db, 'lists', list.id))
     }
 
     renderEmptyList() {
@@ -57,8 +80,6 @@ class HomePage extends React.Component {
     }
 
     render(){
-        const {navigation} = this.props
-        console.log(this.state.lists)
         return (
             <SafeAreaView style = {styles.container}>
                 <Modal animationType='slide' visible = {this.state.addCategory} onRequestClose={this.state.addCategory}>
@@ -86,7 +107,7 @@ class HomePage extends React.Component {
                             horizontal = {true}
                             showsHorizontalScrollIndicator = {false}
                             renderItem={({item}) => (
-                                <Categories navigation = {navigation} list = {item} updateList = {() => this.updateList(list)}/>
+                                <Categories list = {item} updateList = {() => this.updateList(list)} deleteList = {() => this.deleteList(list)}/>
                         )}
                         />
                     </View>
@@ -99,6 +120,7 @@ class HomePage extends React.Component {
                     </View>
                 </View>
             </SafeAreaView>
+            
         );
     }
 }
