@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Text, View , StyleSheet, TouchableOpacity, TextInput, SafeAreaView, Pressable, Button} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 
 function AddCategory(props){
     const BGcolor = ['#FAAB78', '#7FE9DE', '#E97777', '#7FB77E', '#B2A4FF', '#40DFEF', '#F7D8BA', '#FF87B2', 'gold']
-    const icons = ['list', "sun-o", 'moon-o', 'globe', 'briefcase', 'gamepad', 'camera', 'cutlery', 'money', 'shopping-cart', 'plane',
-                    'user', 'heart-o', 'bicycle', 'car', 'music', 'home', 'paint-brush', 'wrench', 'graduation-cap', 'film']
+    const icons = ['format-list-bulleted', 'weather-sunny', 'moon-waning-crescent', 'globe-model', 'briefcase-outline', 'run', 'weight-lifter'
+                    ,'gamepad-variant-outline', 'camera-outline', 'food-outline', 'music', 'cards-heart-outline', 'car-hatchback', 'brush',
+                    'home-outline', 'filmstrip', 'wrench-outline', 'shopping-outline', 'school-outline', 'airplane', 'shower']
     const [text, setText] = useState('');
     const [color, setColor] = useState(BGcolor[0])
     const [icon, setIcon] = useState(icons[0])
@@ -29,7 +31,7 @@ function AddCategory(props){
         return icons.map((icon) => {
             return(
                 <TouchableOpacity key = {icon} onPress={() => setIcon(icon)}>
-                <Icon name={icon} size = {25} color = 'grey'/>
+                    <MaterialCommunityIcons name={icon} size = {25} color = 'grey'/>
                 </TouchableOpacity>
             )
         })
@@ -58,7 +60,7 @@ function AddCategory(props){
                 <TouchableOpacity onPress = {props.close} >
                     <Icon name = 'times' size = {30}/>
                 </TouchableOpacity>
-                <Icon name = {icon} size = {30} color={color}/>
+                <MaterialCommunityIcons name = {icon} size = {30} color={color}/>
                 <TouchableOpacity disabled = {disable} onPress = {() => createCategory(text)}>
                     <Text style = {{fontSize: 18, color: disable ? 'grey' : color, fontWeight: 600}}>Save</Text>
                 </TouchableOpacity>

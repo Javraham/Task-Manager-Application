@@ -6,7 +6,7 @@ import AddCategory from './AddCategory';
 import Summary from '../components/Summary';
 import TodayTasks from '../components/Information';
 import {db} from '../firebase'
-import {query, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc} from 'firebase/firestore'
+import {query, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc, Timestamp, serverTimestamp} from 'firebase/firestore'
 
 const Today = {
     category: 'Todays List',
@@ -52,7 +52,8 @@ class HomePage extends React.Component {
             category: list.category,
             color: list.color,
             icon: list.icon,
-            todo: list.todo
+            todo: list.todo,
+            timestamp: new Date()
         })
 
         console.log(newCat.id)

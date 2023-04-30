@@ -5,7 +5,7 @@ import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity,
 import TodoInputClass from '../components/inputClass';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Swipeable } from 'react-native-gesture-handler';
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 
 class TodoScreen extends React.Component {
@@ -16,13 +16,12 @@ class TodoScreen extends React.Component {
             focus: false
         }
         this.ref = createRef();
-        this.closeRef = createRef();
     }
 
 
     addItem = () => {
         this.setState({emptylist: false, focus: true});
-        this.props.list.todo.push({name: '', completed: false})
+        this.props.list.todo.push({name: '', completed: false, key: Date.now()})
         this.props.updateList(this.props.list)
     }
 
@@ -46,8 +45,8 @@ class TodoScreen extends React.Component {
 
     rightView(drag, index){
         const opacity = drag.interpolate({
-            inputRange: [-100, -50, -40, -30, 0],
-            outputRange: [1, 0.6, 0.4, 0.2, 0],
+            inputRange: [-80, -50, -25, 0],
+            outputRange: [1, 0.6, 0.4, 0],
             extrapolate: 'clamp'
         })
         return (
@@ -61,11 +60,6 @@ class TodoScreen extends React.Component {
 
     deleteItem = (index) => {
         this.handleDelete(index)
-        this.closeDelete
-    }
-
-    closeDelete = () => {
-        this.closeRef.current.close()
     }
 
     alertDelete = () =>
@@ -98,20 +92,19 @@ class TodoScreen extends React.Component {
                 <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
                     <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' color={list.color} size = {30}/></TouchableOpacity>
                     <Text style = {[styles.title, {color: list.color}]} numberOfLines={1}>{list.category}</Text>
-                    <TouchableOpacity style = {[styles.edit, {borderColor: list.color}]} onPress={this.alertDelete} >
-                        <Ionicons name = 'ellipsis-horizontal' color = {list.color} size = {15}/>
+                    <TouchableOpacity onPress={this.alertDelete} style = {{marginRight: 20}} >
+                        <Ionicons name = 'ellipsis-horizontal-circle' color = {list.color} size = {30}/>
                     </TouchableOpacity>    
                 </View>
                 {!this.state.emptylist && <KeyboardAvoidingView behavior= {Platform.OS === 'ios' ? 'padding' : 'height'} style = {{flex: 1}}>
                 <View style = {{width: '100%', height: '90%'}}>
                 <FlatList
                     data={list.todo}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item, index) => item.key}
                     renderItem={({item, index}) => (
                     <Swipeable 
                         renderRightActions={(_, drag) => this.rightView(drag, index)} 
-                        onSwipeableWillOpen={(right) => this.ref.current.blur()}
-                        ref = {this.closeRef}>
+                        onSwipeableWillOpen={Keyboard.dismiss}>
                         <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center', paddingVertical: 15}}>
                             <TouchableOpacity 
                                 onPress={() => this.toggleCompleted(index)}>
@@ -132,7 +125,7 @@ class TodoScreen extends React.Component {
                 }
                 {this.state.emptylist &&
                     <View style = {{alignItems: 'center'}}>
-                        <Icon name = {list.icon} size={50} color={list.color}/>
+                        <MaterialCommunityIcons name = {list.icon} size={70} color={list.color}/>
                     </View>
                 }
                 <TouchableOpacity onPress = {() => this.addItem()} style = {styles.addItem}>
