@@ -5,6 +5,8 @@ import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 
 
 function AddCategory(props){
+    const date = new Date();
+    const timestamp = (date.getMonth()+1).toString().padStart(2, '0')+'/'+(date.getDate()).toString().padStart(2, '0')+'/'+date.getFullYear()
     const BGcolor = ['#FAAB78', '#7FE9DE', '#E97777', '#7FB77E', '#B2A4FF', '#40DFEF', '#F7D8BA', '#FF87B2', 'gold']
     const icons = ['format-list-bulleted', 'weather-sunny', 'moon-waning-crescent', 'globe-model', 'briefcase-outline', 'run', 'weight-lifter'
                     ,'gamepad-variant-outline', 'camera-outline', 'food-outline', 'music', 'cards-heart-outline', 'car-hatchback', 'brush',
@@ -43,7 +45,7 @@ function AddCategory(props){
             setError(true)
         }
         else{
-            props.add({category: text, color: color, icon: icon,todo: []})
+            props.add({category: text, color: color, icon: icon, todo: [], timestamp: timestamp})
             setText('')
             props.close();
         }

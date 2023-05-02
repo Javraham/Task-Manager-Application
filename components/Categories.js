@@ -44,7 +44,6 @@ function Categories({navigation, list, updateList, deleteList}) {
                     <View style = {[styles.TopCon, {backgroundColor: list.color}]}>
                             <View style = {{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                                 <MaterialCommunityIcons name = {list.icon} size ={30} color = {'white'}/>
-                                <Text>{list.timerstamp}</Text>   
                                 <Icon name = {'info-circle'} size ={20} color = {'white'}/>   
                             </View>
                             <Text style = {styles.cat} numberOfLines={1}>{list.category}</Text>

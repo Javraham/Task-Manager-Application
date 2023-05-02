@@ -1,51 +1,69 @@
-import React, { useEffect, useRef } from 'react';
-import { View,Text, StyleSheet, Dimensions, Animated } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View,Text, StyleSheet, Pressable, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Svg, {Circle} from 'react-native-svg'
+import SummaryPage from '../Pages/SummaryPage'
 
 function Summary(props) {
 
+    const [visible, setVisibility] = useState(false)
+    const completedList = [];
+    const completed = props.list.map(val => {
+        return val.todo.filter(value => {
+            return value.completed
+        })
+    })
+
+    props.list.forEach((val, i) => {
+        completedList.push({...val, todo: completed[i]})
+    })
+
+
     switch(props.title){
-        case 'Priority': percentage = () => All(); break;
         case 'Completed': percentage = () => Completed(); break;
+        case 'All': percentage = () => All(); break;
         default: percentage = () => {return 0};
     }
     
 
-    const All = () => {
-        return 3
+    const Completed = () => {
+        const numComp = completedList.reduce((sum, val) => {
+            return sum + val.todo.length
+        }, 0);
+
+        return numComp
     }
 
-    const Completed = () => {
-        const isCompleted = []
-        
-        const todos = props.list.map(value => {
-            return value.todo
-        })
+    const All = () => {
+        const numTodos = props.list.reduce((sum, val) => {
+            return sum + val.todo.length
+        }, 0);
 
-        todos.forEach(element => {
-            element.forEach(value => {
-                isCompleted.push(value.completed)
-            }) 
-        })
-        
-        const numCompleted = isCompleted.filter(value => value).length
-        return isNaN(numCompleted) ? 0 : numCompleted
+        return numTodos
     }
 
 
     return (
-        <View style = {styles.container}>
-            <View style = {{gap: 10}}>
-                <Icon name = {props.iconName} color = {props.color} size = {30}/>
-                <Text style = {{fontSize: 18, fontWeight: 500, color: 'grey'}}>{props.title}</Text>
-            </View>
-            <View style = {{justifyContent: 'center', alignItems: 'center'}}>
-                <View >
-                    <Text style = {styles.number}>{percentage()}</Text>
+        <>
+            <Modal animationType='slide' visible = {visible} onRequestClose={visible}>
+                <SummaryPage 
+                    list = {props.title === 'All' ? props.list : completedList} 
+                    title = {props.title} color = {props.color}
+                    icon = {props.iconName}
+                    close = {() => setVisibility(false)}
+                    />
+            </Modal>
+            <Pressable style = {styles.container} onPress={() => setVisibility(true)}>
+                <View style = {{gap: 10}}>
+                    <Icon name = {props.iconName} color = {props.color} size = {30}/>
+                    <Text style = {{fontSize: 18, fontWeight: 500, color: 'grey'}}>{props.title}</Text>
                 </View>
-            </View>
-        </View>
+                <View style = {{justifyContent: 'center', alignItems: 'center'}}>
+                    <View >
+                        <Text style = {styles.number}>{percentage()}</Text>
+                    </View>
+                </View>
+            </Pressable>
+        </>
     );
 }
 

@@ -1,10 +1,9 @@
 import React, { createRef, useEffect, useRef } from 'react';
 import {useState} from 'react'
 import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity, 
-    FlatList, KeyboardAvoidingView, Button, TextInput, Animated, Alert, Keyboard} from 'react-native';
-import TodoInputClass from '../components/inputClass';
+    FlatList, KeyboardAvoidingView, Button, TextInput, Animated, Alert, Keyboard, TouchableWithoutFeedback, Pressable, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Swipeable } from 'react-native-gesture-handler';
+import { Swipeable} from 'react-native-gesture-handler';
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 
@@ -13,9 +12,11 @@ class TodoScreen extends React.Component {
         super(props);
         this.state = {
             emptylist: this.props.list.todo.length > 0 ? false: true,
-            focus: false
+            focus: false,
+            visible: false,
+            edit: true,
+            swipeRef: [],
         }
-        this.ref = createRef();
     }
 
 
@@ -26,7 +27,8 @@ class TodoScreen extends React.Component {
     }
 
     handleDelete = (index) => {
-        this.props.list.todo.splice(index, 1)
+        // this.props.list.todo.splice(index, 1)
+        const newlist = this.props.list.todo.filter((val, i))
         this.props.updateList(this.props.list)
         if(this.props.list.todo.length == 0){
             this.setState({emptylist: true})
@@ -50,26 +52,31 @@ class TodoScreen extends React.Component {
             extrapolate: 'clamp'
         })
         return (
-            <TouchableOpacity onPress={()=> this.deleteItem(index)}>
-                <Animated.View style = {[styles.delete, {opacity: opacity}]}>
-                    <Icon name = 'trash' color = 'white' size ={25} style = {{paddingHorizontal: 30}}/>
-                </Animated.View>
-            </TouchableOpacity>
+                <>
+                    <Pressable onPress={() => this.handleDelete(index)}>
+                        <Animated.View style = {[styles.delete, {opacity: opacity}]}>
+                            <Icon name = 'trash' color = 'white' size ={25}/>
+                        </Animated.View>
+                    </Pressable>
+                    <Pressable>
+                        <Animated.View style = {[styles.delete, {opacity: opacity, backgroundColor: list.color}]}>
+                            <Ionicons name = 'information-circle-outline' color = 'white' size ={30} />
+                        </Animated.View>
+                    </Pressable>
+                </>
         )
     }
 
-    deleteItem = (index) => {
-        this.handleDelete(index)
+    alertDelete = () => {
+        this.setState({visible: false});
+        Alert.alert('Delete "' + this.props.list.category+'"?', 'This will delete all of its content', [
+        {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+        },
+        {text: 'Delete', onPress: () => this.editList(), style: 'destructive'},
+        ]); 
     }
-
-    alertDelete = () =>
-    Alert.alert('Are you sure you want to delete ' + this.props.list.category, 'This will delete all of its content', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-      },
-      {text: 'Delete', onPress: () => this.editList(), style: 'destructive'},
-    ]);
 
     editList(){
         this.props.deleteList(this.props.list);
@@ -78,45 +85,77 @@ class TodoScreen extends React.Component {
 
     checkInput = (item, index) => {
         if(item.name == ""){
-            this.handleDelete(index);
+            this.handleDelete(index)
         }
         else{
             this.props.updateList(this.props.list)
         }
     }
 
+    closeSwipe = () => {
+        this.state.swipeRef.forEach((swipeable) => {
+                swipeable?.close()
+            })
+    }
+
+    handleEdit = () => {
+        this.setState({visible: false})
+    }
+
     render(){
         list = this.props.list
         return (
-            <SafeAreaView style = {styles.container}>
+            <SafeAreaView style = {styles.container} onTouchStart={() => this.closeSwipe()}>
+                <View style = {{flex: 1, justifyContent: 'space-between', marginLeft: 20}}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
                     <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' color={list.color} size = {30}/></TouchableOpacity>
-                    <Text style = {[styles.title, {color: list.color}]} numberOfLines={1}>{list.category}</Text>
-                    <TouchableOpacity onPress={this.alertDelete} style = {{marginRight: 20}} >
-                        <Ionicons name = 'ellipsis-horizontal-circle' color = {list.color} size = {30}/>
-                    </TouchableOpacity>    
+                    <Text style = {[styles.title, {color: list.color}]} numberOfLines={1}>{list.category.length <= 20 ? list.category : list.category.substring(0,20) + '...'}</Text>
+                        <TouchableOpacity onPress={() => this.setState({visible: true})} style = {{marginRight: 20}} >
+                            <Ionicons name = 'ellipsis-horizontal-circle' color = {list.color} size = {30}/>
+                        </TouchableOpacity>  
+                        <Modal visible = {this.state.visible} transparent>
+                            <TouchableOpacity style = {{flex: 1}} onPress={() => this.setState({visible: false})}/>
+                                <SafeAreaView style = {styles.popup}>
+                                    <TouchableOpacity style = {[styles.popupItem, {borderBottomWidth: 1, borderColor: 'grey'}]} onPress = {() => this.handleEdit()}>
+                                        <Text style = {{fontSize: 17}}>Edit List</Text>
+                                        <MaterialCommunityIcons name='playlist-edit' size={30}/>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style = {styles.popupItem} onPress = {this.alertDelete}>
+                                        <Text style = {{color: 'red', fontSize: 17}}>Delete List</Text>
+                                        <Ionicons name='trash-outline' color={'red'} size={25}/>
+                                    </TouchableOpacity>
+                                </SafeAreaView>
+                        </Modal>   
                 </View>
-                {!this.state.emptylist && <KeyboardAvoidingView behavior= {Platform.OS === 'ios' ? 'padding' : 'height'} style = {{flex: 1}}>
-                <View style = {{width: '100%', height: '90%'}}>
+                {!this.state.emptylist && <KeyboardAvoidingView behavior= 'padding' style = {{flex: 1}}>
+                <View style = {{height: '90%', }}>
                 <FlatList
                     data={list.todo}
-                    keyExtractor={(item, index) => item.key}
+                    keyExtractor={(item) => item.key}
                     renderItem={({item, index}) => (
                     <Swipeable 
                         renderRightActions={(_, drag) => this.rightView(drag, index)} 
-                        onSwipeableWillOpen={Keyboard.dismiss}>
-                        <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center', paddingVertical: 15}}>
+                        onSwipeableWillOpen={() => this.setState({edit: false})}
+                        onSwipeableWillClose={() => this.setState({edit: true})}
+                        ref={(swipe) => this.state.swipeRef[index] = swipe}>
+                        <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderColor: 'lightgrey'}}>
                             <TouchableOpacity 
                                 onPress={() => this.toggleCompleted(index)}>
                                 <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
                             </TouchableOpacity>
+
                             <TextInput  maxLength = {40} autoFocus = {this.state.focus}
                                 onBlur = {() => this.checkInput(item, index)}
                                 onChangeText = {text => this.handleInput(text, item)} 
                                 defaultValue =  {item.name}
-                                style = {{ fontSize: 16, flexGrow: 1}} 
-                                ref = {this.ref}
-                                />                             
+                                editable = {this.state.edit}
+                                style = {{ fontSize: 16, flexGrow: 1, paddingVertical: 10}} 
+                                />
+                            {this.state.viewEdit && 
+                                <TouchableOpacity style = {{marginRight: 20}} onPress={() => this.handleDelete(index)}>
+                                    <Icon name='trash' color={'red'} size={20}/>
+                                </TouchableOpacity>
+                            } 
                         </View>
                     </Swipeable>)}
                 />
@@ -129,9 +168,10 @@ class TodoScreen extends React.Component {
                     </View>
                 }
                 <TouchableOpacity onPress = {() => this.addItem()} style = {styles.addItem}>
-                    <Icon name = 'plus-circle' color = {list.color} size={35}/>
-                    <Text style = {{fontWeight: 'bold', color: list.color, fontSize: 30}}>New Task</Text>
+                    <Icon name = 'plus-circle' color = {list.color} size={25}/>
+                    <Text style = {{fontWeight: 'bold', color: list.color, fontSize: 20}}>New Task</Text>
                 </TouchableOpacity>
+                </View>
             </SafeAreaView>
         )
     }
@@ -141,16 +181,14 @@ export default TodoScreen;
 
 const styles = StyleSheet.create({
     container: {
-        marginLeft: 20,
         flex: 1,
-        justifyContent: 'space-between'
+        backgroundColor: '#F9F9F9',
     },
 
     title: {
         fontSize: 25,
         fontWeight: 'bold',
         padding: 10,
-        width: '70%'
     },
 
     addItem: {
@@ -172,7 +210,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#E55451',
         justifyContent: 'center',
         alignItems: 'center',
-        flex: 1
+        flex: 1,
+        width: 80
     },
 
     edit: {
@@ -187,5 +226,21 @@ const styles = StyleSheet.create({
 
     deleteList: {
         color: 'red'
+    },
+
+    popup:{
+        position: 'absolute',
+        right: 20,
+        top: 100,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        width: '50%'
+    },
+
+    popupItem: {
+        padding: 10, 
+        flexDirection: 'row', 
+        justifyContent: 'space-between',
+        alignItems: 'center'
     }
 })

@@ -37,6 +37,7 @@ class HomePage extends React.Component {
             })
             this.setState({lists: listArray})
         })
+        console.log('hello')
     }
 
     componentWillUnmount() {
@@ -53,10 +54,8 @@ class HomePage extends React.Component {
             color: list.color,
             icon: list.icon,
             todo: list.todo,
-            timestamp: new Date()
+            timestamp: list.timestamp
         })
-
-        console.log(newCat.id)
     }
 
     updateList = async (list) => {
@@ -74,13 +73,14 @@ class HomePage extends React.Component {
         if(this.state.lists.length === 0){
             return (
                 <View style = {{justifyContent: 'center', height: '100%', alignItems: 'center'}}>
-                    <Text style = {{fontSize: 20, color: 'grey'}}>Click Icon to Add Project</Text>
+                    <Text style = {{fontSize: 20, color: 'grey'}}>Currently No Added Lists</Text>
                 </View>
             )
         }
     }
 
     render(){
+        console.log(this.state.lists)
         return (
             <SafeAreaView style = {styles.container}>
                 <Modal animationType='slide' visible = {this.state.addCategory} onRequestClose={this.state.addCategory}>
@@ -93,9 +93,10 @@ class HomePage extends React.Component {
                 <View>
                     <TodayTasks list = {this.state.today} updateList = {() => this.updateList(list)}/>
                 </View>
+                
                 <View style = {{ gap: 20, height: '30%'}}>
                     <View style = {{flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <Text style= {{ color: 'navy', fontSize: 20, fontWeight: 500}}>My Projects</Text>
+                        <Text style= {{ color: 'navy', fontSize: 20, fontWeight: 500}}>My Lists</Text>
                         <TouchableOpacity style = {styles.addCat} onPress = {() => this.toggleModal()}>
                             <Icon name = {'plus'} color = 'white'/>
                         </TouchableOpacity>
@@ -113,13 +114,13 @@ class HomePage extends React.Component {
                         />
                     </View>
                 </View>
-                <View>
-                    <Text style= {{ color: 'navy', fontSize: 20, paddingBottom: 20, fontWeight: 500}}>Summary</Text>
-                    <View style = {styles.summary}>
-                        <Summary title = 'Completed' iconName = 'check' color = "green" list = {this.state.lists}/>
-                        <Summary title = 'Priority' color = "gold" iconName = 'star-o' list = {this.state.lists}/>           
-                    </View>
-                </View>
+                  <View>
+                     <Text style= {{ color: 'navy', fontSize: 20, paddingBottom: 20, fontWeight: 500}}>Summary</Text>
+                     <View style = {styles.summary}>
+                         <Summary title = 'All' color = "black" iconName = 'inbox' list = {this.state.lists}/>           
+                         <Summary title = 'Completed' iconName = 'check' color = "#009B77" list = {this.state.lists}/>
+                     </View>
+                 </View>
             </SafeAreaView>
             
         );
@@ -166,6 +167,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         flexWrap: 'wrap',
-        gap: 20,
+        gap: '10%'
     }
 })
