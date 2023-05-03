@@ -58,10 +58,10 @@ class HomePage extends React.Component {
         })
     }
 
-    updateList = async (list) => {
+    updateList = async () => {
         const updated = doc(db, 'lists', list.id)
         await updateDoc(updated, {
-            todo: list.todo
+            todo: list.todo,
         })
     }
 
@@ -80,7 +80,6 @@ class HomePage extends React.Component {
     }
 
     render(){
-        console.log(this.state.lists)
         return (
             <SafeAreaView style = {styles.container}>
                 <Modal animationType='slide' visible = {this.state.addCategory} onRequestClose={this.state.addCategory}>

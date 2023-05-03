@@ -27,9 +27,9 @@ class TodoScreen extends React.Component {
     }
 
     handleDelete = (index) => {
-        // this.props.list.todo.splice(index, 1)
-        const newlist = this.props.list.todo.filter((val, i))
-        this.props.updateList(this.props.list)
+        const newlist = this.props.list.todo.filter((todo, i) => i !== index);
+        this.props.list.todo = newlist
+        this.props.updateList(this.props.list);
         if(this.props.list.todo.length == 0){
             this.setState({emptylist: true})
         }
@@ -143,7 +143,6 @@ class TodoScreen extends React.Component {
                                 onPress={() => this.toggleCompleted(index)}>
                                 <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
                             </TouchableOpacity>
-
                             <TextInput  maxLength = {40} autoFocus = {this.state.focus}
                                 onBlur = {() => this.checkInput(item, index)}
                                 onChangeText = {text => this.handleInput(text, item)} 
