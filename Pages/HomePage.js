@@ -118,6 +118,8 @@ class HomePage extends React.Component {
                      <View style = {styles.summary}>
                          <Summary title = 'All' color = "black" iconName = 'inbox' list = {this.state.lists}/>           
                          <Summary title = 'Completed' iconName = 'check' color = "#009B77" list = {this.state.lists}/>
+                         <Summary title = 'Priorities' iconName = 'star-o' color = '#F1C40F' list = {this.state.lists}/>
+                         <Summary title = 'Scheduled' iconName = 'calendar-o' color = "red" list = {this.state.lists}/>
                      </View>
                  </View>
             </SafeAreaView>

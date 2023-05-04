@@ -7,10 +7,20 @@ function Summary(props) {
 
     const [visible, setVisibility] = useState(false)
     const completedList = [];
+    const priorityList = [];
     const completed = props.list.map(val => {
         return val.todo.filter(value => {
             return value.completed
         })
+    })
+    const priority = props.list.map(val => {
+        return val.todo.filter(value => {
+            return value.priority === 'Low' || value.priority === 'High'
+        })
+    })
+
+    props.list.forEach((val, i) => {
+        priorityList.push({category: val.category, todo: priority[i]})
     })
 
     props.list.forEach((val, i) => {
@@ -21,6 +31,7 @@ function Summary(props) {
     switch(props.title){
         case 'Completed': percentage = () => Completed(); break;
         case 'All': percentage = () => All(); break;
+        case 'Priorities': percentage = () => Priorities(); break;
         default: percentage = () => {return 0};
     }
     
@@ -41,16 +52,36 @@ function Summary(props) {
         return numTodos
     }
 
+    const Priorities = () => {
+        const numPriorities = priorityList.reduce((sum, val) => {
+            return sum + val.todo.length
+        }, 0);
 
-    return (
-        <>
-            <Modal animationType='slide' visible = {visible} onRequestClose={visible}>
+        return numPriorities
+    }
+
+    const renderPage = () => {
+        if (props.title === 'Completed' || props.title === 'All'){
+            return (
                 <SummaryPage 
                     list = {props.title === 'All' ? props.list : completedList} 
                     title = {props.title} color = {props.color}
                     icon = {props.iconName}
                     close = {() => setVisibility(false)}
                     />
+            )
+        } else{
+            return(
+                <View></View>
+            )
+        }
+    }
+
+
+    return (
+        <>
+            <Modal animationType='slide' visible = {visible} onRequestClose={visible}>
+                {renderPage()}
             </Modal>
             <Pressable style = {styles.container} onPress={() => setVisibility(true)}>
                 <View style = {{gap: 10}}>

@@ -5,6 +5,7 @@ import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity,
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Swipeable} from 'react-native-gesture-handler';
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import DetailPage from './Details';
 
 
 class TodoScreen extends React.Component {
@@ -16,13 +17,17 @@ class TodoScreen extends React.Component {
             visible: false,
             edit: true,
             swipeRef: [],
+            infoVisible: false,
+            item: {},
+            index: null,
+            priorityLevel: null
         }
     }
 
 
     addItem = () => {
         this.setState({emptylist: false, focus: true});
-        this.props.list.todo.push({name: '', completed: false, key: Date.now()})
+        this.props.list.todo.push({name: '', completed: false, priority: 'None', key: Date.now()})
         this.props.updateList(this.props.list)
     }
 
@@ -45,7 +50,9 @@ class TodoScreen extends React.Component {
         this.props.updateList(list)
     }
 
-    rightView(drag, index){
+    
+
+    rightView(drag, index, item){
         const opacity = drag.interpolate({
             inputRange: [-80, -50, -25, 0],
             outputRange: [1, 0.6, 0.4, 0],
@@ -58,7 +65,7 @@ class TodoScreen extends React.Component {
                             <Icon name = 'trash' color = 'white' size ={25}/>
                         </Animated.View>
                     </Pressable>
-                    <Pressable>
+                    <Pressable onPress={() => {this.setState({infoVisible: true, item: item, index: index}); console.log(item)}}>
                         <Animated.View style = {[styles.delete, {opacity: opacity, backgroundColor: list.color}]}>
                             <Ionicons name = 'information-circle-outline' color = 'white' size ={30} />
                         </Animated.View>
@@ -105,7 +112,14 @@ class TodoScreen extends React.Component {
     render(){
         list = this.props.list
         return (
-            <SafeAreaView style = {styles.container} onTouchStart={() => this.closeSwipe()}>
+            <SafeAreaView style = {[styles.container, {backgroundColor: '#F9F9F9'}]} onTouchStart={() => this.closeSwipe()}>
+                <Modal visible = {this.state.infoVisible} animationType='slide' transparent>
+                    <DetailPage list = {list} 
+                        close = {() => this.setState({infoVisible: false})} 
+                        item = {this.state.item} 
+                        index = {this.state.index}
+                        update = {this.props.updateList}/>
+                </Modal>
                 <View style = {{flex: 1, justifyContent: 'space-between', marginLeft: 20}}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
                     <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' color={list.color} size = {30}/></TouchableOpacity>
@@ -134,7 +148,7 @@ class TodoScreen extends React.Component {
                     keyExtractor={(item) => item.key}
                     renderItem={({item, index}) => (
                     <Swipeable 
-                        renderRightActions={(_, drag) => this.rightView(drag, index)} 
+                        renderRightActions={(_, drag) => this.rightView(drag, index, item)} 
                         onSwipeableWillOpen={() => this.setState({edit: false})}
                         onSwipeableWillClose={() => this.setState({edit: true})}
                         ref={(swipe) => this.state.swipeRef[index] = swipe}>
@@ -181,7 +195,6 @@ export default TodoScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F9F9F9',
     },
 
     title: {
