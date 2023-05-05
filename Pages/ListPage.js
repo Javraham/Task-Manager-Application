@@ -27,7 +27,7 @@ class TodoScreen extends React.Component {
 
     addItem = () => {
         this.setState({emptylist: false, focus: true});
-        this.props.list.todo.push({name: '', completed: false, priority: 'None', key: Date.now()})
+        this.props.list.todo.push({name: '', completed: false, priority: 'None', Date: null, key: Date.now()})
         this.props.updateList(this.props.list)
     }
 
@@ -65,7 +65,7 @@ class TodoScreen extends React.Component {
                             <Icon name = 'trash' color = 'white' size ={25}/>
                         </Animated.View>
                     </Pressable>
-                    <Pressable onPress={() => {this.setState({infoVisible: true, item: item, index: index}); console.log(item)}}>
+                    <Pressable onPress={() => {this.setState({infoVisible: true, item: item, index: index})}}>
                         <Animated.View style = {[styles.delete, {opacity: opacity, backgroundColor: list.color}]}>
                             <Ionicons name = 'information-circle-outline' color = 'white' size ={30} />
                         </Animated.View>
@@ -157,6 +157,8 @@ class TodoScreen extends React.Component {
                                 onPress={() => this.toggleCompleted(index)}>
                                 <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
                             </TouchableOpacity>
+                            {item.priority !== 'None' && 
+                                <Icon name = {item.priority === 'Low' ? 'star-o' : 'exclamation'} color = {item.priority === 'Low' ? 'gold' : '#0E86D4'}size={20}/>}
                             <TextInput  maxLength = {40} autoFocus = {this.state.focus}
                                 onBlur = {() => this.checkInput(item, index)}
                                 onChangeText = {text => this.handleInput(text, item)} 

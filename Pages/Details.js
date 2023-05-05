@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import {View, StyleSheet, SafeAreaView, Button, Text, Pressable, TouchableOpacity} from 'react-native'
+import {View, StyleSheet, SafeAreaView, Button, Text, Pressable, TouchableOpacity, DatePickerIOSComponent} from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 function DetailPage(props) {
     const [priority, setPriority] = useState(false)
     const [level, setLevel] = useState(props.item.priority)
+    const [date, setDate] = useState(props.item.Date === null ? new Date() : props.item?.Date?.toDate())
+    const [showDate, setShowDate] = useState(props.item.Date === null ? false : true)
+    const [pressable, setPressable] = useState(false)
 
     const handleLevel = (level) => {
         setLevel(level)
@@ -13,6 +17,7 @@ function DetailPage(props) {
 
     const updateFields = () => {
         list.todo[props.index].priority = level;
+        list.todo[props.index].Date = date
         props.update(list);
         props.close()
     }
@@ -27,6 +32,26 @@ function DetailPage(props) {
         })
     }
 
+    const handleShow = () => {
+        showDate ? setDate(null) : setDate(new Date())
+        setShowDate(!showDate)
+    }
+
+    const changeDate = (event, selectedDate) => {
+        event.type === 'dismissed' ? setPressable(false) : setPressable(true)
+        console.log(selectedDate)
+        setDate(selectedDate || date)
+    }
+
+    const renderDate = () => {
+        console.log(date, new Date())
+        if(showDate){
+            return (
+                <Text style = {{fontSize: 10, color: 'grey'}}>{date === new Date() ? 'Today' : 'Tomorrow'}</Text>
+            )
+        }
+    }
+
 
     return (
         <SafeAreaView style = {styles.infoContainer}>
@@ -35,7 +60,20 @@ function DetailPage(props) {
                 <Text style = {{fontSize: 17, fontWeight: 500}}>Details</Text>
                 <Button title='Done' onPress={() => updateFields()}/>
             </View>
-            <Pressable style = {styles.priority} onPress={() => setPriority(true)}>
+            <View style = {[styles.priority, {paddingVertical: 9, marginBottom: 10}]}>
+                <View>
+                    <Text style = {{fontSize: 16, fontWeight: 400}}>Date</Text>
+                    {renderDate()}
+                </View>
+                <View style = {{flexDirection: 'row', gap: 5}}>
+                    <Pressable disabled = {pressable} onPress={() => handleShow()} style = {[styles.showDate, {backgroundColor: showDate ? '#D5F5E3' : 'white',}]}>
+                        <Icon name='calendar-plus-o' size={25} color={'#2ECC71'} />
+                    </Pressable>
+                    {showDate && <DateTimePicker value = {date ?? new Date()} minimumDate={new Date()} onChange={changeDate}/>}
+                </View>
+            </View>
+            
+            <Pressable disabled = {pressable} style = {styles.priority} onPress={() => setPriority(true)}>
                 <Text style = {{fontSize: 16, fontWeight: 400}}>Priority</Text>
                     {priority && 
                     <View style = {{flexDirection: 'row', gap: 10}}>
@@ -79,5 +117,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         marginHorizontal: 10
+    },
+
+    showDate: {
+        height: 35,
+        width: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5
     },
 })

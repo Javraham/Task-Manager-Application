@@ -21,7 +21,7 @@ class TodoScreen extends React.Component {
             if (this.state.showCompleted[i] || this.props.title === 'Completed' || !val.completed){
                 return (
                     <View key={index}>
-                        <View style = {[styles.input, {borderBottomWidth: index < item.todo.length-1 ? 0.5 : 0}]}>
+                        <View style = {[styles.input, {borderBottomWidth: 0.5 }]}>
                             <Icon name = {val.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {item.color} />
                                 <TextInput
                                     defaultValue =  {val.name}
@@ -58,7 +58,6 @@ class TodoScreen extends React.Component {
         let newList = [...this.state.showCompleted]
         newList[index] = !newList[index]
         this.setState({showCompleted: newList})
-        console.log(this.state.showCompleted)
     }
 
     render(){

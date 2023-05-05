@@ -37,7 +37,6 @@ class HomePage extends React.Component {
             })
             this.setState({lists: listArray})
         })
-        console.log('hello')
     }
 
     componentWillUnmount() {

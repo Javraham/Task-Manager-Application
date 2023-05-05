@@ -2,27 +2,35 @@ import React, { useRef, useState } from 'react';
 import { View,Text, StyleSheet, Pressable, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SummaryPage from '../Pages/SummaryPage'
+import PriorityPage from '../Pages/PriorityPage';
 
 function Summary(props) {
 
     const [visible, setVisibility] = useState(false)
     const completedList = [];
-    const priorityList = [];
+    const highPriorityList = [];
+    const lowPriorityList = [];
     const completed = props.list.map(val => {
         return val.todo.filter(value => {
             return value.completed
         })
     })
-    const priority = props.list.map(val => {
+    const highPriority = props.list.map(val => {
         return val.todo.filter(value => {
-            return value.priority === 'Low' || value.priority === 'High'
+            return value.priority === 'High'
+        })
+    });
+
+    const lowPriority = props.list.map(val => {
+        return val.todo.filter(value => {
+            return value.priority === 'Low'
         })
     })
 
     props.list.forEach((val, i) => {
-        priorityList.push({category: val.category, todo: priority[i]})
+        highPriorityList.push({category: val.category, todo: highPriority[i]})
+        lowPriorityList.push({category: val.category, todo: lowPriority[i]})
     })
-
     props.list.forEach((val, i) => {
         completedList.push({...val, todo: completed[i]})
     })
@@ -53,11 +61,15 @@ function Summary(props) {
     }
 
     const Priorities = () => {
-        const numPriorities = priorityList.reduce((sum, val) => {
+        const numLowPriorities = lowPriorityList.reduce((sum, val) => {
             return sum + val.todo.length
         }, 0);
 
-        return numPriorities
+        const numHighPriorities = highPriorityList.reduce((sum, val) => {
+            return sum + val.todo.length
+        }, 0);
+
+        return numHighPriorities+numLowPriorities
     }
 
     const renderPage = () => {
@@ -72,7 +84,13 @@ function Summary(props) {
             )
         } else{
             return(
-                <View></View>
+                <PriorityPage 
+                    list = {[highPriorityList, lowPriorityList]}
+                    title = {props.title} 
+                    color = {props.color} 
+                    close = {() => setVisibility(false)}
+                    icon = {props.iconName}
+                    />
             )
         }
     }
