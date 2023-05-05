@@ -4,9 +4,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 function DetailPage(props) {
+    console.log(!props.item.Date instanceof Date)
     const [priority, setPriority] = useState(false)
     const [level, setLevel] = useState(props.item.priority)
-    const [date, setDate] = useState(props.item.Date === null ? new Date() : props.item?.Date?.toDate())
+    const [date, setDate] = useState(props.item.Date === null ? new Date() : !(props.item.Date instanceof Date) ? props.item.Date.toDate() : props.item.Date)
     const [showDate, setShowDate] = useState(props.item.Date === null ? false : true)
     const [pressable, setPressable] = useState(false)
 
@@ -39,12 +40,10 @@ function DetailPage(props) {
 
     const changeDate = (event, selectedDate) => {
         event.type === 'dismissed' ? setPressable(false) : setPressable(true)
-        console.log(selectedDate)
         setDate(selectedDate || date)
     }
 
     const renderDate = () => {
-        console.log(date, new Date())
         if(showDate){
             return (
                 <Text style = {{fontSize: 10, color: 'grey'}}>{date === new Date() ? 'Today' : 'Tomorrow'}</Text>
