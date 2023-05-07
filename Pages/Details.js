@@ -4,10 +4,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 function DetailPage(props) {
-    console.log(!props.item.Date instanceof Date)
     const [priority, setPriority] = useState(false)
     const [level, setLevel] = useState(props.item.priority)
-    const [date, setDate] = useState(props.item.Date === null ? new Date() : !(props.item.Date instanceof Date) ? props.item.Date.toDate() : props.item.Date)
+    const [date, setDate] = useState(props.item.Date === null ? null : !(props.item.Date instanceof Date) ? props.item.Date.toDate() : props.item.Date)
     const [showDate, setShowDate] = useState(props.item.Date === null ? false : true)
     const [pressable, setPressable] = useState(false)
 
@@ -17,6 +16,7 @@ function DetailPage(props) {
     }
 
     const updateFields = () => {
+        console.log(date)
         list.todo[props.index].priority = level;
         list.todo[props.index].Date = date
         props.update(list);
@@ -44,9 +44,30 @@ function DetailPage(props) {
     }
 
     const renderDate = () => {
+        const isToday = date.getDate() === new Date().getDate() && 
+                        date.getMonth() === new Date().getMonth() && 
+                        date.getFullYear() === new Date().getFullYear()
+        let month; 
+
+        switch(date.getMonth()){
+            case 0: month = 'Jan'; break;
+            case 1: month = 'Feb'; break;
+            case 2: month = 'Mar'; break;
+            case 3: month = 'Apr'; break;
+            case 4: month = 'May'; break;
+            case 5: month = 'June'; break;
+            case 6: month = 'July'; break;
+            case 7: month = 'Aug'; break;
+            case 8: month = 'Sep'; break;
+            case 9: month = 'Oct'; break;
+            case 10: month = 'Nov'; break;
+            case 11: month = 'Dec'; break;
+            default: month = 'Jan';
+        }
+
         if(showDate){
             return (
-                <Text style = {{fontSize: 10, color: 'grey'}}>{date === new Date() ? 'Today' : 'Tomorrow'}</Text>
+                <Text style = {{fontSize: 10, color: 'blue'}}>{isToday ? 'Today' : month + ' ' + date.getDate() + ', ' + date.getFullYear()}</Text>
             )
         }
     }
@@ -62,7 +83,7 @@ function DetailPage(props) {
             <View style = {[styles.priority, {paddingVertical: 9, marginBottom: 10}]}>
                 <View>
                     <Text style = {{fontSize: 16, fontWeight: 400}}>Date</Text>
-                    {renderDate()}
+                    {showDate ? renderDate() : null}
                 </View>
                 <View style = {{flexDirection: 'row', gap: 5}}>
                     <Pressable disabled = {pressable} onPress={() => handleShow()} style = {[styles.showDate, {backgroundColor: showDate ? '#D5F5E3' : 'white',}]}>

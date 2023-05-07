@@ -109,6 +109,47 @@ class TodoScreen extends React.Component {
         this.setState({visible: false})
     }
 
+    renderList = (item, index) => {
+        const date = item.Date !== null ? (!(item.Date instanceof Date) ? item.Date.toDate() : item.Date) : null
+        const isToday = date !== null ? (date.getDate() === new Date().getDate() && 
+                        date.getMonth() === new Date().getMonth() && 
+                        date.getFullYear() === new Date().getFullYear()) : null
+        return (
+            <Swipeable 
+                        renderRightActions={(_, drag) => this.rightView(drag, index, item)} 
+                        onSwipeableWillOpen={() => this.setState({edit: false})}
+                        onSwipeableWillClose={() => this.setState({edit: true})}
+                        ref={(swipe) => this.state.swipeRef[index] = swipe}>
+                        <View style = {{paddingVertical: 10, borderBottomWidth: 0.5, borderColor: 'lightgrey'}}>
+                            <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center'}}>
+                                <TouchableOpacity 
+                                    onPress={() => this.toggleCompleted(index)}>
+                                    <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
+                                </TouchableOpacity>
+                                <View style = {{flexDirection: 'row', flexGrow: 1}}>
+                                    {item.priority === 'High' && <Text style = {{fontSize: 16, color: '#0E86D4'}}>!!! </Text>}
+                                    <TextInput  maxLength = {40} autoFocus = {this.state.focus}
+                                        onBlur = {() => this.checkInput(item, index)}
+                                        onChangeText = {text => this.handleInput(text, item)} 
+                                        defaultValue =  {item.name}
+                                        editable = {this.state.edit}
+                                        style = {{ fontSize: 16, flexGrow: 1}} 
+                                        />
+                                </View>
+                            </View>
+                                {date && 
+                                    <View style = {{flexDirection: 'row', gap: 5, alignItems: 'center', paddingHorizontal: 31}}>
+                                        <Icon name='calendar' color = {this.props.list.color} size = {15}/>
+                                        <Text style = {{paddingVertical: 3, color: 'grey'}}>
+                                            {isToday ? 'Today' : date.getFullYear() + '-' + date.getMonth().toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0')}
+                                        </Text>
+                                    </View>
+                                }
+                        </View>
+                    </Swipeable>
+        )    
+    }
+
     render(){
         list = this.props.list
         return (
@@ -146,33 +187,7 @@ class TodoScreen extends React.Component {
                 <FlatList
                     data={list.todo}
                     keyExtractor={(item) => item.key}
-                    renderItem={({item, index}) => (
-                    <Swipeable 
-                        renderRightActions={(_, drag) => this.rightView(drag, index, item)} 
-                        onSwipeableWillOpen={() => this.setState({edit: false})}
-                        onSwipeableWillClose={() => this.setState({edit: true})}
-                        ref={(swipe) => this.state.swipeRef[index] = swipe}>
-                        <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderColor: 'lightgrey'}}>
-                            <TouchableOpacity 
-                                onPress={() => this.toggleCompleted(index)}>
-                                <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
-                            </TouchableOpacity>
-                            {item.priority !== 'None' && 
-                                <Icon name = {item.priority === 'Low' ? 'star-o' : 'exclamation'} color = {item.priority === 'Low' ? 'gold' : '#0E86D4'}size={20}/>}
-                            <TextInput  maxLength = {40} autoFocus = {this.state.focus}
-                                onBlur = {() => this.checkInput(item, index)}
-                                onChangeText = {text => this.handleInput(text, item)} 
-                                defaultValue =  {item.name}
-                                editable = {this.state.edit}
-                                style = {{ fontSize: 16, flexGrow: 1, paddingVertical: 10}} 
-                                />
-                            {this.state.viewEdit && 
-                                <TouchableOpacity style = {{marginRight: 20}} onPress={() => this.handleDelete(index)}>
-                                    <Icon name='trash' color={'red'} size={20}/>
-                                </TouchableOpacity>
-                            } 
-                        </View>
-                    </Swipeable>)}
+                    renderItem={({item, index}) => (this.renderList(item, index))}
                 />
                 </View>
                 </KeyboardAvoidingView>

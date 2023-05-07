@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, Modal, Button } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, Modal, Button, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Categories from '../components/Categories';
 import AddCategory from './AddCategory';
 import Summary from '../components/Summary';
 import TodayTasks from '../components/Information';
 import {db} from '../firebase'
+import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {query, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc, Timestamp, serverTimestamp} from 'firebase/firestore'
 
 const Today = {
@@ -85,7 +86,12 @@ class HomePage extends React.Component {
                     <AddCategory close = {() => this.toggleModal()} add = {this.addCategory}/>
                 </Modal>
                 <View>
-                    <Text style = {styles.title}>Welcome Back,</Text>
+                    <View style = {{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Text style = {styles.title}>Welcome Back,</Text>
+                        <Pressable style = {{padding: 7}}>
+                            <Ionicons name='search' size={25} />
+                        </Pressable>
+                    </View>
                     <Text style = {styles.name}>Jonathan Avraham</Text>
                 </View>
                 <View>
