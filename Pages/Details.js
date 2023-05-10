@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {View, StyleSheet, SafeAreaView, Button, Text, Pressable, TouchableOpacity, DatePickerIOSComponent} from 'react-native'
+import {View, StyleSheet, SafeAreaView, Button, Text, Pressable, TouchableOpacity, KeyboardAvoidingView, TextInput} from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -27,7 +27,7 @@ function DetailPage(props) {
         return levels.map((pLevel, i) => {
             return(
                 <TouchableOpacity key = {i} onPress={() => handleLevel(pLevel)} style = {{backgroundColor: level === pLevel ? '#EBF5FB' : 'white', borderRadius: 10, paddingHorizontal: 5}}>
-                    <Text style = {{fontSize: 17, color: level === pLevel ? '#5DADE2' : 'grey',  fontWeight: level === pLevel ? 'bold' : 400}}>{pLevel}</Text>
+                    <Text style = {{fontSize: 15, color: level === pLevel ? '#5DADE2' : 'grey',  fontWeight: level === pLevel ? 'bold' : 400}}>{pLevel}</Text>
                 </TouchableOpacity>
             )
         })
@@ -80,7 +80,11 @@ function DetailPage(props) {
                 <Text style = {{fontSize: 17, fontWeight: 500}}>Details</Text>
                 <Button title='Done' onPress={() => updateFields()}/>
             </View>
-            <View style = {[styles.priority, {paddingVertical: 9, marginBottom: 10}]}>
+            <View style = {[styles.field, {justifyContent: 'flex-start'}]}>
+                <Text style = {{fontSize: 16, fontWeight: 400}}>Name: </Text>
+                <Text style = {{fontSize: 16, fontWeight: 400, color: 'grey'}} numberOfLines={1}>{props.item.name}</Text>
+            </View>
+            <View style = {styles.field}>
                 <View>
                     <Text style = {{fontSize: 16, fontWeight: 400}}>Date</Text>
                     {showDate ? renderDate() : null}
@@ -92,26 +96,27 @@ function DetailPage(props) {
                     {showDate && <DateTimePicker value = {date ?? new Date()} minimumDate={new Date()} onChange={changeDate}/>}
                 </View>
             </View>
-            
-            <Pressable disabled = {pressable} style = {styles.priority} onPress={() => setPriority(true)}>
-                <Text style = {{fontSize: 16, fontWeight: 400}}>Priority</Text>
-                    {priority && 
-                    <View style = {{flexDirection: 'row', gap: 10}}>
-                        {renderLevels(['None', 'Low', 'High'])}
-                    </View> ||
-                    !priority && 
-                    <View style = {{flexDirection: 'row', gap: 5}}>
-                        <Text style = {{fontSize: 16, fontWeight: 400, color: 'grey'}}>{level}</Text>
-                        {level !== 'None' && 
-                            <Icon 
-                                name={level === 'Low' ? 'star-o' : 'exclamation-circle'} 
-                                color={level === 'Low' ? 'gold' : '#0E86D4'}
-                                size={20}
-                            />
-                        }                            
-                    </View>  
-                    }
-            </Pressable>
+            <View style = {{flexDirection: 'row'}}>
+                <Pressable disabled = {pressable} style = {[styles.field, {flexGrow: 1}]} onPress={() => setPriority(true)}>
+                    <Text style = {{fontSize: 16, fontWeight: 400}}>Priority</Text>
+                        {priority && 
+                        <View style = {{flexDirection: 'row'}}>
+                            {renderLevels(['None', 'Low', 'High'])}
+                        </View> ||
+                        !priority && 
+                        <View style = {{flexDirection: 'row', gap: 5}}>
+                            <Text style = {{fontSize: 16, fontWeight: 400, color: 'grey'}}>{level}</Text>
+                            {level !== 'None' && 
+                                <Icon 
+                                    name={level === 'Low' ? 'star-o' : 'exclamation-circle'} 
+                                    color={level === 'Low' ? 'gold' : '#0E86D4'}
+                                    size={20}
+                                />
+                            }                            
+                        </View>  
+                        }
+                </Pressable>
+            </View>
         </SafeAreaView>
     )
 }
@@ -127,9 +132,10 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         height: '40%',
+        justifyContent: 'space-between'
     },
 
-    priority: {
+    field: {
         flexDirection: 'row',
         backgroundColor: 'white',
         borderRadius: 20,

@@ -8,7 +8,7 @@ class PriorityPage extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            emptylist: props.list[0].some(val => val.todo.length > 0) ||  props.list[1].some(val => val.todo.length > 0) ? false : true,
+            emptylist: props.list[0].length > 0 ||  props.list[1].length > 0 ? false : true,
             // showCompleted: Array(props.list.length).fill(false),
             complete: false,
         };
@@ -58,7 +58,9 @@ class PriorityPage extends React.Component{
                 <View style = {{flexDirection: 'row', alignItems: 'center', marginBottom: 20, justifyContent: 'space-between', marginHorizontal: 20}}>
                     <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' color={this.props.color} size = {30}/></TouchableOpacity>
                     <Text style = {[styles.title, {color: this.props.color}]} numberOfLines={1}>{this.props.title}</Text>
-                    <View/>
+                    <TouchableOpacity >
+                        <Ionicons name = 'ellipsis-horizontal-circle' color = {this.props.color} size = {30}/>
+                    </TouchableOpacity>
                 </View>
                 {!this.state.emptylist &&
                 <View style = {{flex: 1}}>
@@ -98,7 +100,6 @@ const styles = StyleSheet.create({
     input: {
         flexDirection: 'row', 
         gap: 10, 
-        
         paddingVertical: 10, 
         borderColor: 'lightgrey',
         marginLeft: 20

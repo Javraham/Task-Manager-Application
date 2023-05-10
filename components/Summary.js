@@ -3,49 +3,22 @@ import { View,Text, StyleSheet, Pressable, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SummaryPage from '../Pages/SummaryPage'
 import PriorityPage from '../Pages/PriorityPage';
+import ScheduledPage from '../Pages/ScheduledPage';
 
 function Summary(props) {
-
     const [visible, setVisibility] = useState(false)
-    const completedList = [];
-    const highPriorityList = [];
-    const lowPriorityList = [];
-    const completed = props.list.map(val => {
-        return val.todo.filter(value => {
-            return value.completed
-        })
-    })
-    const highPriority = props.list.map(val => {
-        return val.todo.filter(value => {
-            return value.priority === 'High'
-        })
-    });
-
-    const lowPriority = props.list.map(val => {
-        return val.todo.filter(value => {
-            return value.priority === 'Low'
-        })
-    })
-
-    props.list.forEach((val, i) => {
-        highPriorityList.push({category: val.category, todo: highPriority[i]})
-        lowPriorityList.push({category: val.category, todo: lowPriority[i]})
-    })
-    props.list.forEach((val, i) => {
-        completedList.push({...val, todo: completed[i]})
-    })
-
 
     switch(props.title){
         case 'Completed': percentage = () => Completed(); break;
         case 'All': percentage = () => All(); break;
         case 'Priorities': percentage = () => Priorities(); break;
+        case 'Scheduled': percentage = () => Scheduled(); break;
         default: percentage = () => {return 0};
     }
     
 
     const Completed = () => {
-        const numComp = completedList.reduce((sum, val) => {
+        const numComp = props.list.reduce((sum, val) => {
             return sum + val.todo.length
         }, 0);
 
@@ -61,31 +34,72 @@ function Summary(props) {
     }
 
     const Priorities = () => {
-        const numLowPriorities = lowPriorityList.reduce((sum, val) => {
+        const numLowPriorities = props.list[0].reduce((sum, val) => {
             return sum + val.todo.length
         }, 0);
 
-        const numHighPriorities = highPriorityList.reduce((sum, val) => {
+        const numHighPriorities = props.list[1].reduce((sum, val) => {
             return sum + val.todo.length
         }, 0);
 
         return numHighPriorities+numLowPriorities
     }
 
+    const Scheduled = () => {
+        const numScheduled = props.list.reduce((sum, val) => sum + val.todo.length, 0)
+        return numScheduled;
+    }
+
+    const ScheduledList = () => {
+        const s = new Map()
+        if (props.title === 'Scheduled'){
+            props.list.forEach((value) => {
+                value.todo.forEach(todo => {
+                    const date =  todo.Date.toDate().toISOString().split('T')[0]
+                    if(s.has(date)){
+                        if(s.get(date).some(obj => obj.id === value.id)){
+                            s.get(date)[s.get(date).findIndex(obj => obj.id === value.id)].todo.push(todo)
+                        } else{
+                            s.get(date).push({...value, todo: [todo]})
+                        }
+                    } else{
+                        s.set(date, [{...value, todo: [todo]}])
+                    }
+                })
+            })
+        }
+        
+        return Array.from(s).sort((a, b) => {
+            const dateA = new Date(a[0]);
+            const dateB = new Date(b[0])
+            return dateA - dateB;
+        })
+    }
+    
     const renderPage = () => {
         if (props.title === 'Completed' || props.title === 'All'){
             return (
                 <SummaryPage 
-                    list = {props.title === 'All' ? props.list : completedList} 
+                    list = {props.list} 
                     title = {props.title} color = {props.color}
                     icon = {props.iconName}
                     close = {() => setVisibility(false)}
                     />
             )
-        } else{
+        } else if (props.title === 'Priorities'){
             return(
                 <PriorityPage 
-                    list = {[highPriorityList, lowPriorityList]}
+                    list = {props.list}
+                    title = {props.title} 
+                    color = {props.color} 
+                    close = {() => setVisibility(false)}
+                    icon = {props.iconName}
+                    />
+            )
+        } else {
+            return(
+                <ScheduledPage 
+                    list = {ScheduledList()}
                     title = {props.title} 
                     color = {props.color} 
                     close = {() => setVisibility(false)}

@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Swipeable} from 'react-native-gesture-handler';
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import DetailPage from './Details';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 
 class TodoScreen extends React.Component {
@@ -20,7 +21,8 @@ class TodoScreen extends React.Component {
             infoVisible: false,
             item: {},
             index: null,
-            priorityLevel: null
+            priorityLevel: null,
+            showCompleted: false
         }
     }
 
@@ -45,6 +47,7 @@ class TodoScreen extends React.Component {
     }
 
     toggleCompleted(index) {
+        this.setState({focus: false})
         let list = this.props.list;
         list.todo[index].completed = !list.todo[index].completed
         this.props.updateList(list)
@@ -114,6 +117,8 @@ class TodoScreen extends React.Component {
         const isToday = date !== null ? (date.getDate() === new Date().getDate() && 
                         date.getMonth() === new Date().getMonth() && 
                         date.getFullYear() === new Date().getFullYear()) : null
+
+        if(!item.completed)
         return (
             <Swipeable 
                         renderRightActions={(_, drag) => this.rightView(drag, index, item)} 
@@ -132,8 +137,8 @@ class TodoScreen extends React.Component {
                                         onBlur = {() => this.checkInput(item, index)}
                                         onChangeText = {text => this.handleInput(text, item)} 
                                         defaultValue =  {item.name}
-                                        editable = {this.state.edit}
-                                        style = {{ fontSize: 16, flexGrow: 1}} 
+                                        editable = {this.state.edit && !item.completed}
+                                        style = {{ fontSize: 16, flexGrow: 1, color: item.completed ? 'grey' : 'black'}} 
                                         />
                                 </View>
                             </View>
@@ -141,13 +146,48 @@ class TodoScreen extends React.Component {
                                     <View style = {{flexDirection: 'row', gap: 5, alignItems: 'center', paddingHorizontal: 31}}>
                                         <Icon name='calendar' color = {this.props.list.color} size = {15}/>
                                         <Text style = {{paddingVertical: 3, color: 'grey'}}>
-                                            {isToday ? 'Today' : date.getFullYear() + '-' + date.getMonth().toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0')}
+                                            {isToday ? 'Today' : date.getFullYear() + '-' + (date.getMonth()+1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0')}
                                         </Text>
                                     </View>
                                 }
                         </View>
                     </Swipeable>
         )    
+    }
+
+    renderCompleted = (list) => {
+        return list.todo.map((item, i) => {
+            if(!item.completed) return
+            const date = item.Date !== null ? (!(item.Date instanceof Date) ? item.Date.toDate() : item.Date) : null
+            const isToday = date !== null ? (date.getDate() === new Date().getDate() && 
+                            date.getMonth() === new Date().getMonth() && 
+                            date.getFullYear() === new Date().getFullYear()) : null
+    
+            return (
+                <View key={i} style = {{paddingVertical: 10, borderBottomWidth: 0.5, borderColor: 'lightgrey'}}>
+                    <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center'}}>
+                        <TouchableOpacity 
+                            onPress={() => this.toggleCompleted(i)}>
+                            <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
+                        </TouchableOpacity>
+                        <View style = {{flexDirection: 'row', flexGrow: 1}}>
+                            {item.priority === 'High' && <Text style = {{fontSize: 16, color: '#0E86D4'}}>!!! </Text>}
+                            <Text
+                                style = {{ fontSize: 16, flexGrow: 1, color: item.completed ? 'grey' : 'black'}} 
+                            >{item.name}</Text>
+                        </View>
+                    </View>
+                        {date && 
+                            <View style = {{flexDirection: 'row', gap: 5, alignItems: 'center', paddingHorizontal: 31}}>
+                                <Icon name='calendar' color = {this.props.list.color} size = {15}/>
+                                <Text style = {{paddingVertical: 3, color: 'grey'}}>
+                                    {isToday ? 'Today' : date.getFullYear() + '-' + date.getMonth().toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0')}
+                                </Text>
+                            </View>
+                        }
+                </View>
+            )
+        })
     }
 
     render(){
@@ -182,15 +222,26 @@ class TodoScreen extends React.Component {
                                 </SafeAreaView>
                         </Modal>   
                 </View>
-                {!this.state.emptylist && <KeyboardAvoidingView behavior= 'padding' style = {{flex: 1}}>
-                <View style = {{height: '90%', }}>
-                <FlatList
-                    data={list.todo}
-                    keyExtractor={(item) => item.key}
-                    renderItem={({item, index}) => (this.renderList(item, index))}
-                />
+                {!this.state.emptylist && 
+                <View style = {{flex: 1}}>
+                    
+                    <KeyboardAwareFlatList
+                        data={list.todo}
+                        keyExtractor={(item) => item.key}
+                        renderItem={({item, index}) => (this.renderList(item, index))}
+                        ListFooterComponent={
+                            list.todo.some(val => val.completed) && 
+                            <View style = {{paddingVertical: 5}}>
+                                <TouchableOpacity style = {{flexDirection: 'row', gap: 10, alignItems: 'center'}} onPress={() => this.setState({showCompleted: !this.state.showCompleted})}>
+                                    <Icon name={this.state.showCompleted ? 'eye-slash' : 'eye'} size={15} color={list.color}/>
+                                    <Text style = {{fontWeight: 400, color: list.color}}>{this.state.showCompleted ? 'Hide Completed' : 'Show Completed'}</Text>
+                                </TouchableOpacity>
+                                {this.state.showCompleted && this.renderCompleted(list)}
+                            </View>
+                        }
+                    />
                 </View>
-                </KeyboardAvoidingView>
+               
                 }
                 {this.state.emptylist &&
                     <View style = {{alignItems: 'center'}}>

@@ -18,20 +18,15 @@ function Categories({navigation, list, updateList, deleteList}) {
         setShow(!showList)
     }
 
-    const renderItem = () => {
-        const item = list.todo.filter((value, index) => index < 2)
-        if(item.length === 0){
-            return <Text style = {{color: 'white'}}>Tap to add tasks</Text>
-        }
-        return item.map((value, index) => {
-            return (
-                <View key={index} style = {{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
-                    <Icon name = {value.completed ? 'check-circle' : 'circle-o'} color={'white'}/>
-                    <Text numberOfLines = {1} style = {{width: '90%', color: 'white'}}>{value.name}</Text>
-                </View>
-            )
-        })
-    }
+    const newList = list.todo.sort((a, b) => {
+        if(a.completed === b.completed){
+            return 0
+        } else if(a.completed){
+            return 1
+        } return -1
+    })
+
+
 
     const percent = list.todo.length != 0 ? Math.floor(completedTasks.length/list.todo.length*100) : 0
 

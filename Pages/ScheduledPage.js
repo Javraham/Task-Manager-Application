@@ -4,9 +4,10 @@ import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity,
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Swipeable} from 'react-native-gesture-handler';
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import moment from 'moment';
 
 
-class SummaryPage extends React.Component {
+class ScheduledPage extends React.Component {
     constructor(props){
         super(props);
         this.state = {
@@ -17,48 +18,53 @@ class SummaryPage extends React.Component {
     }
 
     renderList = (item, i) => {
-        return item.todo.map((val, index) => {
-            if (this.state.showCompleted[i] || this.props.title === 'Completed' || !val.completed){
-                return (
-                    <View key={index}>
-                        <View style = {[styles.input, {borderBottomWidth: 0.5 }]}>
-                            <Icon name = {val.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {item.color} />
-                                <TextInput
-                                    defaultValue =  {val.name}
-                                    editable = {false}
-                                    style = {{ fontSize: 16, flexGrow: 1, color: val.completed ? '#A8A8A8' : 'black'}} 
-                                />
+        return item.map((val, index) => {
+            return val.todo.map((task, i) => {
+                return(
+                    <View key={i}>
+                        <View style = {[styles.input, {borderBottomWidth:  0.5}]}>
+                            <Icon name = {task.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {val.color} />
+                            <View>
+                                <Text style = {{ fontSize: 16, color: task.completed ? '#A8A8A8' : 'black'}} >{task.name}</Text>
+                                <Text style = {{color: 'grey'}}>{val.category}</Text>
+                            </View>
                         </View>
                     </View>
                 )
-            }
+            })
+        })
+    }
+
+    renderDates = (item, index) => {
+        const moment = require('moment')
+        const date = moment(item[0]).toDate()
+        let month;
+        switch(date.getMonth()){
+            case 0: month = 'Jan'; break;
+            case 1: month = 'Feb'; break;
+            case 2: month = 'Mar'; break;
+            case 3: month = 'Apr'; break;
+            case 4: month = 'May'; break;
+            case 5: month = 'June'; break;
+            case 6: month = 'July'; break;
+            case 7: month = 'Aug'; break;
+            case 8: month = 'Sep'; break;
+            case 9: month = 'Oct'; break;
+            case 10: month = 'Nov'; break;
+            case 11: month = 'Dec'; break;
+            default: month = 'Jan';
         }
+        return (
+            <View style = {{gap: 10, paddingVertical: 10, borderBottomWidth: index < this.props.list.length-1 ? 2 : 0, borderColor: 'lightgrey'}}>
+                <View style = {{gap: 10 ,marginLeft: 20}}>
+                    <Text style = {{fontSize: 17, color: 'grey', fontWeight: 600}}>{item[0] === new Date().toISOString().split('T')[0] ? 'Today' : month + ' ' + date.getDate() + ', ' + date.getFullYear()}</Text>
+                </View>
+                {this.renderList(item[1], index)}
+            </View>
         )
     }
 
-    renderCategories = (item, index) => {
-        if(item.todo.length > 0)
-            return (
-                <View style = {{gap: 10, paddingVertical: 10, borderBottomWidth: index < this.props.list.length-1 ? 2 : 0, borderColor: 'lightgrey'}}>
-                    <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center', marginLeft: 20}}>
-                        <MaterialCommunityIcons name={item.icon} size={20} color={item.color}/>
-                        <Text style = {{fontSize: 20, color: item.color, fontWeight: 600}}>{item.category}</Text>
-                    </View>
-                    {this.props.title === 'All' && <TouchableOpacity style = {{flexDirection: 'row', gap: 10, alignItems: 'center', marginLeft: 20}} onPress={() => this.toggleCompleted(index)}>
-                        <Icon name={this.state.showCompleted[index] ? 'eye-slash' : 'eye'} color={item.color} size={15}/>
-                        <Text style = {{color: item.color, fontWeight: 400}}>{this.state.showCompleted[index] ? 'Hide Completed' : 'Show Completed'}</Text>
-                    </TouchableOpacity>
-                    }
-                    {this.renderList(item, index)}
-                </View>
-            )
-    }
 
-    toggleCompleted = index => {
-        let newList = [...this.state.showCompleted]
-        newList[index] = !newList[index]
-        this.setState({showCompleted: newList})
-    }
 
     render(){
         list = this.props.list
@@ -76,8 +82,8 @@ class SummaryPage extends React.Component {
                 <View style = {{flex: 1}}>
                 <FlatList
                     data={list}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({item, index}) => (this.renderCategories(item, index))}/>
+                    keyExtractor={(item, index) => index}
+                    renderItem={({item, index}) => (this.renderDates(item, index))}/>
                 </View>
                 </KeyboardAvoidingView>
                 }
@@ -93,7 +99,7 @@ class SummaryPage extends React.Component {
     }
 }
 
-export default SummaryPage;
+export default ScheduledPage;
 
 const styles = StyleSheet.create({
     container: {
@@ -110,7 +116,7 @@ const styles = StyleSheet.create({
 
     input: {
         flexDirection: 'row', 
-        gap: 10, alignItems: 'center', 
+        gap: 10,
         paddingVertical: 10, 
         borderColor: 'lightgrey',
         marginLeft: 20

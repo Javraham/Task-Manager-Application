@@ -4,18 +4,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Categories from '../components/Categories';
 import AddCategory from './AddCategory';
 import Summary from '../components/Summary';
-import TodayTasks from '../components/Information';
+import TodayTasks from '../components/TodayTasks';
 import {db} from '../firebase'
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {query, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc, Timestamp, serverTimestamp} from 'firebase/firestore'
 
-const Today = {
-    category: 'Todays List',
-    color: 'black',
-    icon: 'calendar',
-    id: 1,
-    todo: []
-}
 
 class HomePage extends React.Component {
 
@@ -24,7 +17,6 @@ class HomePage extends React.Component {
         this.state = {
             addCategory: false,
             lists: [],
-            today: Today
         }
         this.unsubscribe = null;
         this.query = query(collection(db, 'lists'));
@@ -79,7 +71,61 @@ class HomePage extends React.Component {
         }
     }
 
+    getTodaysList = () => {
+        let list = this.state.lists;
+        const todayList = list.map(val => {
+            return {...val, todo: val.todo.filter(value => {
+                let date = value.Date === null ? null : !(value?.Date instanceof Date) ? value?.Date?.toDate() : value.Date
+                return date === null ? false : (date.getMonth() === new Date().getMonth() && 
+                    date.getFullYear() === new Date().getFullYear() && 
+                    date.getDate() === new Date().getDate())
+            })}
+        });
+        return todayList
+    }
+
+    getScheduledList = () => {
+        let list = this.state.lists;
+        const scheduledList = list.map(val => {
+            return {...val, todo: val.todo.filter(value => {
+                return value.Date !== null && !value.completed
+            })}
+        });
+        return scheduledList.filter(object => object.todo.length > 0)
+    }
+
+    getPriorityList = () => {
+        let list = this.state.lists;
+        const highPriorityList = list.map(val => {
+            return {...val, todo: val.todo.filter(value => {
+                return value.priority === 'High' && !value.completed
+            })}
+        });
+        const lowPriorityList = list.map(val => {
+            return {...val, todo: val.todo.filter(value => {
+                return value.priority === 'Low' && !value.completed
+            })}
+        });
+
+        return [highPriorityList.filter(object => object.todo.length > 0), lowPriorityList.filter(object => object.todo.length > 0)]
+    }
+
+    getCompletedList = () => {
+        let list = this.state.lists;
+        const completedList = list.map(val => {
+            return {...val, todo: val.todo.filter(value => {
+                return value.completed
+            })}
+        });
+        return completedList.filter(object => object.todo.length > 0)
+    }
+
+    getLists = () => {
+        return this.state.lists
+    }
+
     render(){
+        console.log(this.getScheduledList())
         return (
             <SafeAreaView style = {styles.container}>
                 <Modal animationType='slide' visible = {this.state.addCategory} onRequestClose={this.state.addCategory}>
@@ -95,7 +141,7 @@ class HomePage extends React.Component {
                     <Text style = {styles.name}>Jonathan Avraham</Text>
                 </View>
                 <View>
-                    <TodayTasks list = {this.state.today} updateList = {() => this.updateList(list)}/>
+                    <TodayTasks list = {this.getTodaysList()} updateList = {() => this.updateList(list)}/>
                 </View>
                 
                 <View style = {{ gap: 20, height: '30%'}}>
@@ -108,7 +154,7 @@ class HomePage extends React.Component {
                     <View>
                         {this.renderEmptyList()}
                         <FlatList
-                            data={this.state.lists}
+                            data={this.getLists()}
                             keyExtractor={item => item.id}
                             horizontal = {true}
                             showsHorizontalScrollIndicator = {false}
@@ -121,10 +167,10 @@ class HomePage extends React.Component {
                   <View>
                      <Text style= {{ color: 'navy', fontSize: 20, paddingBottom: 20, fontWeight: 500}}>Summary</Text>
                      <View style = {styles.summary}>
-                         <Summary title = 'All' color = "black" iconName = 'inbox' list = {this.state.lists}/>           
-                         <Summary title = 'Completed' iconName = 'check' color = "#009B77" list = {this.state.lists}/>
-                         <Summary title = 'Priorities' iconName = 'star-o' color = '#F1C40F' list = {this.state.lists}/>
-                         <Summary title = 'Scheduled' iconName = 'calendar-o' color = "red" list = {this.state.lists}/>
+                         <Summary title = 'All' color = "#2980B9" iconName = 'inbox' list = {this.getLists()}/>           
+                         <Summary title = 'Completed' iconName = 'check' color = "#009B77" list = {this.getCompletedList()}/>
+                         <Summary title = 'Priorities' iconName = 'star-o' color = '#F1C40F' list = {this.getPriorityList()}/>
+                         <Summary title = 'Scheduled' iconName = 'calendar-o' color = "red" list = {this.getScheduledList()}/>
                      </View>
                  </View>
             </SafeAreaView>
