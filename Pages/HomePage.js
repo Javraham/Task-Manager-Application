@@ -120,12 +120,23 @@ class HomePage extends React.Component {
         return completedList.filter(object => object.todo.length > 0)
     }
 
-    getLists = () => {
-        return this.state.lists
+    getRemainingLists = () => {
+        let list = this.state.lists
+        const remainingList = list.map(val => {
+            return {...val, todo: val.todo.filter(value => {
+                return !value.completed
+            })}
+        });
+        return remainingList.filter(object => object.todo.length > 0)
+    }
+
+    getSortedList = () => {
+        let list = this.state.lists
+        list.sort((a, b) => b.timestamp - a.timestamp)
+        return list
     }
 
     render(){
-        console.log(this.getScheduledList())
         return (
             <SafeAreaView style = {styles.container}>
                 <Modal animationType='slide' visible = {this.state.addCategory} onRequestClose={this.state.addCategory}>
@@ -154,7 +165,7 @@ class HomePage extends React.Component {
                     <View>
                         {this.renderEmptyList()}
                         <FlatList
-                            data={this.getLists()}
+                            data={this.getSortedList()}
                             keyExtractor={item => item.id}
                             horizontal = {true}
                             showsHorizontalScrollIndicator = {false}
@@ -167,7 +178,7 @@ class HomePage extends React.Component {
                   <View>
                      <Text style= {{ color: 'navy', fontSize: 20, paddingBottom: 20, fontWeight: 500}}>Summary</Text>
                      <View style = {styles.summary}>
-                         <Summary title = 'All' color = "#2980B9" iconName = 'inbox' list = {this.getLists()}/>           
+                         <Summary title = 'All' color = "#2980B9" iconName = 'inbox' list = {this.getRemainingLists()}/>           
                          <Summary title = 'Completed' iconName = 'check' color = "#009B77" list = {this.getCompletedList()}/>
                          <Summary title = 'Priorities' iconName = 'star-o' color = '#F1C40F' list = {this.getPriorityList()}/>
                          <Summary title = 'Scheduled' iconName = 'calendar-o' color = "red" list = {this.getScheduledList()}/>

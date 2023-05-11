@@ -53,6 +53,15 @@ class TodoScreen extends React.Component {
         this.props.updateList(list)
     }
 
+    handleCompletedDelete = (list) => {
+        const newlist = list.todo.filter((todo) => !todo.completed);
+        this.props.list.todo = newlist
+        this.props.updateList(this.props.list);
+        if(this.props.list.todo.length == 0){
+            this.setState({emptylist: true})
+        }
+    } 
+
     
 
     rightView(drag, index, item){
@@ -85,6 +94,16 @@ class TodoScreen extends React.Component {
             onPress: () => console.log('Cancel Pressed'),
         },
         {text: 'Delete', onPress: () => this.editList(), style: 'destructive'},
+        ]); 
+    }
+
+    alertDeleteCompleted = () => {
+        Alert.alert('Delete All Completed Items?', null, [
+        {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+        },
+        {text: 'Delete', onPress: () => this.handleCompletedDelete(this.props.list), style: 'destructive'},
         ]); 
     }
 
@@ -231,12 +250,17 @@ class TodoScreen extends React.Component {
                         renderItem={({item, index}) => (this.renderList(item, index))}
                         ListFooterComponent={
                             list.todo.some(val => val.completed) && 
-                            <View style = {{paddingVertical: 5}}>
+                            <View>
+                            <View style = {{paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between'}}>
                                 <TouchableOpacity style = {{flexDirection: 'row', gap: 10, alignItems: 'center'}} onPress={() => this.setState({showCompleted: !this.state.showCompleted})}>
                                     <Icon name={this.state.showCompleted ? 'eye-slash' : 'eye'} size={15} color={list.color}/>
                                     <Text style = {{fontWeight: 400, color: list.color}}>{this.state.showCompleted ? 'Hide Completed' : 'Show Completed'}</Text>
                                 </TouchableOpacity>
-                                {this.state.showCompleted && this.renderCompleted(list)}
+                                <TouchableOpacity  onPress={this.alertDeleteCompleted}>
+                                    <Text style = {{fontWeight: 400, color: list.color, paddingRight: 20}}>Clear Completed</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {this.state.showCompleted && this.renderCompleted(list)}
                             </View>
                         }
                     />

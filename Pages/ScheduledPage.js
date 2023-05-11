@@ -25,7 +25,10 @@ class ScheduledPage extends React.Component {
                         <View style = {[styles.input, {borderBottomWidth:  0.5}]}>
                             <Icon name = {task.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {val.color} />
                             <View>
-                                <Text style = {{ fontSize: 16, color: task.completed ? '#A8A8A8' : 'black'}} >{task.name}</Text>
+                                <View style = {{flexDirection: 'row', flexGrow: 1}}>
+                                    {task.priority === 'High' && <Text style = {{fontSize: 16, color: '#0E86D4'}}>!!! </Text>}
+                                    <Text style = {{ fontSize: 16, color: task.completed ? '#A8A8A8' : 'black'}} >{task.name}</Text>
+                                </View>
                                 <Text style = {{color: 'grey'}}>{val.category}</Text>
                             </View>
                         </View>
@@ -39,6 +42,7 @@ class ScheduledPage extends React.Component {
         const moment = require('moment')
         const date = moment(item[0]).toDate()
         let month;
+        let day;
         switch(date.getMonth()){
             case 0: month = 'Jan'; break;
             case 1: month = 'Feb'; break;
@@ -54,10 +58,21 @@ class ScheduledPage extends React.Component {
             case 11: month = 'Dec'; break;
             default: month = 'Jan';
         }
+
+        switch(date.getDay()){
+            case 0: day = 'Sun'; break;
+            case 1: day = 'Mon'; break;
+            case 2: day = 'Tue'; break;
+            case 3: day = 'Wed'; break;
+            case 4: day = 'Thu'; break;
+            case 5: day= 'Fri'; break;
+            case 6: day = 'Sat'; break;
+        }
+
         return (
             <View style = {{gap: 10, paddingVertical: 10, borderBottomWidth: index < this.props.list.length-1 ? 2 : 0, borderColor: 'lightgrey'}}>
                 <View style = {{gap: 10 ,marginLeft: 20}}>
-                    <Text style = {{fontSize: 17, color: 'grey', fontWeight: 600}}>{item[0] === new Date().toISOString().split('T')[0] ? 'Today' : month + ' ' + date.getDate() + ', ' + date.getFullYear()}</Text>
+                    <Text style = {{fontSize: 17, color: 'grey', fontWeight: 600}}>{item[0] === new Date().toISOString().split('T')[0] ? 'Today' : day + ' ' + month + ' ' + date.getDate() + ', ' + date.getFullYear()}</Text>
                 </View>
                 {this.renderList(item[1], index)}
             </View>

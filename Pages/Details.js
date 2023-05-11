@@ -27,7 +27,7 @@ function DetailPage(props) {
         return levels.map((pLevel, i) => {
             return(
                 <TouchableOpacity key = {i} onPress={() => handleLevel(pLevel)} style = {{backgroundColor: level === pLevel ? '#EBF5FB' : 'white', borderRadius: 10, paddingHorizontal: 5}}>
-                    <Text style = {{fontSize: 15, color: level === pLevel ? '#5DADE2' : 'grey',  fontWeight: level === pLevel ? 'bold' : 400}}>{pLevel}</Text>
+                    <Text style = {{fontSize: 16, color: level === pLevel ? '#5DADE2' : 'grey',  fontWeight: level === pLevel ? 'bold' : 400}}>{pLevel}</Text>
                 </TouchableOpacity>
             )
         })
@@ -48,6 +48,7 @@ function DetailPage(props) {
                         date.getMonth() === new Date().getMonth() && 
                         date.getFullYear() === new Date().getFullYear()
         let month; 
+        let day;
 
         switch(date.getMonth()){
             case 0: month = 'Jan'; break;
@@ -65,9 +66,19 @@ function DetailPage(props) {
             default: month = 'Jan';
         }
 
+        switch(date.getDay()){
+            case 0: day = 'Sun'; break;
+            case 1: day = 'Mon'; break;
+            case 2: day = 'Tue'; break;
+            case 3: day = 'Wed'; break;
+            case 4: day = 'Thu'; break;
+            case 5: day= 'Fri'; break;
+            case 6: day = 'Sat'; break;
+        }
+
         if(showDate){
             return (
-                <Text style = {{fontSize: 10, color: 'blue'}}>{isToday ? 'Today' : month + ' ' + date.getDate() + ', ' + date.getFullYear()}</Text>
+                <Text style = {{fontSize: 10, color: 'blue'}}>{isToday ? 'Today' : day + ', ' + month + ' ' + date.getDate() + ', ' + date.getFullYear()}</Text>
             )
         }
     }

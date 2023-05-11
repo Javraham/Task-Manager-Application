@@ -11,54 +11,58 @@ class SummaryPage extends React.Component {
         super(props);
         this.state = {
             emptylist: props.list.length > 0 ? false : true,
-            showCompleted: Array(props.list.length).fill(false),
             complete: false,
         };
     }
 
     renderList = (item, i) => {
+        
         return item.todo.map((val, index) => {
-            if (this.state.showCompleted[i] || this.props.title === 'Completed' || !val.completed){
-                return (
-                    <View key={index}>
-                        <View style = {[styles.input, {borderBottomWidth: 0.5 }]}>
-                            <Icon name = {val.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {item.color} />
+            const date = val.Date !== null ? (!(val.Date instanceof Date) ? val.Date.toDate() : val.Date) : null
+            const isToday = date !== null ? (date.getDate() === new Date().getDate() && 
+                        date.getMonth() === new Date().getMonth() && 
+                        date.getFullYear() === new Date().getFullYear()) : null
+            return (
+                <View key={index}>
+                    <View style = {[styles.input, {borderBottomWidth: 0.5 }]}>
+                        <Icon name = {val.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {item.color} />
+                        <View>
+                            <View style = {{flexDirection: 'row', flexGrow: 1}}>
+                                {val.priority === 'High' && <Text style = {{fontSize: 16, color: '#0E86D4'}}>!!! </Text>}
                                 <TextInput
                                     defaultValue =  {val.name}
                                     editable = {false}
-                                    style = {{ fontSize: 16, flexGrow: 1, color: val.completed ? '#A8A8A8' : 'black'}} 
+                                    style = {{ fontSize: 16, color: val.completed ? '#A8A8A8' : 'black'}} 
                                 />
-                        </View>
+                            </View>
+                            { date &&
+                                <View style = {{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
+                                    <Icon name='calendar' color = {item.color} size = {15}/>
+                                    <Text style = {{paddingVertical: 3, color: 'grey'}}>
+                                        {isToday ? 'Today' : date.getFullYear() + '-' + (date.getMonth()+1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0')}
+                                    </Text>
+                                </View>
+
+                            }   
+                        </View>    
                     </View>
-                )
-            }
-        }
+                </View>
+            )}
         )
     }
 
     renderCategories = (item, index) => {
-        if(item.todo.length > 0)
-            return (
-                <View style = {{gap: 10, paddingVertical: 10, borderBottomWidth: index < this.props.list.length-1 ? 2 : 0, borderColor: 'lightgrey'}}>
-                    <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center', marginLeft: 20}}>
-                        <MaterialCommunityIcons name={item.icon} size={20} color={item.color}/>
-                        <Text style = {{fontSize: 20, color: item.color, fontWeight: 600}}>{item.category}</Text>
-                    </View>
-                    {this.props.title === 'All' && <TouchableOpacity style = {{flexDirection: 'row', gap: 10, alignItems: 'center', marginLeft: 20}} onPress={() => this.toggleCompleted(index)}>
-                        <Icon name={this.state.showCompleted[index] ? 'eye-slash' : 'eye'} color={item.color} size={15}/>
-                        <Text style = {{color: item.color, fontWeight: 400}}>{this.state.showCompleted[index] ? 'Hide Completed' : 'Show Completed'}</Text>
-                    </TouchableOpacity>
-                    }
-                    {this.renderList(item, index)}
+        return (
+            <View style = {{gap: 10, paddingVertical: 10, borderBottomWidth: index < this.props.list.length-1 ? 2 : 0, borderColor: 'lightgrey'}}>
+                <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center', marginLeft: 20}}>
+                    <MaterialCommunityIcons name={item.icon} size={20} color={item.color}/>
+                    <Text style = {{fontSize: 20, color: item.color, fontWeight: 600}}>{item.category}</Text>
                 </View>
-            )
+                {this.renderList(item, index)}
+            </View>
+        )
     }
 
-    toggleCompleted = index => {
-        let newList = [...this.state.showCompleted]
-        newList[index] = !newList[index]
-        this.setState({showCompleted: newList})
-    }
 
     render(){
         list = this.props.list
@@ -110,7 +114,7 @@ const styles = StyleSheet.create({
 
     input: {
         flexDirection: 'row', 
-        gap: 10, alignItems: 'center', 
+        gap: 10, 
         paddingVertical: 10, 
         borderColor: 'lightgrey',
         marginLeft: 20
