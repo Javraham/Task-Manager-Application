@@ -38,7 +38,7 @@ function Categories({navigation, list, updateList, deleteList}) {
                 <Pressable style = {styles.container} onPress={() => toggleShow()} >
                     <View style = {[styles.TopCon, {backgroundColor: list.color}]}>
                             <View style = {{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                <MaterialCommunityIcons name = {list.icon} size ={30} color = {'white'}/>
+                                <MaterialCommunityIcons name = {list.icon} size ={30} color={'white'}/>
                                 <Icon name = {'info-circle'} size ={20} color = {'white'}/>   
                             </View>
                             <Text style = {styles.cat} numberOfLines={1}>{list.category}</Text>

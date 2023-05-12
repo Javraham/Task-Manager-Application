@@ -1,12 +1,14 @@
 import React, { createRef, useEffect, useRef } from 'react';
 import {useState} from 'react'
-import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity, 
-    FlatList, KeyboardAvoidingView, Button, TextInput, Animated, Alert, Keyboard, TouchableWithoutFeedback, Pressable, Modal } from 'react-native';
+import {Text, StyleSheet, SafeAreaView, View, TouchableOpacity, FlatList, 
+        KeyboardAvoidingView, Button, TextInput, Animated, Alert, Keyboard, 
+        TouchableWithoutFeedback, Pressable, Modal} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Swipeable} from 'react-native-gesture-handler';
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import DetailPage from './Details';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
+import CustomInput from '../components/CustomInput';
 
 
 class TodoScreen extends React.Component {
@@ -22,7 +24,9 @@ class TodoScreen extends React.Component {
             item: {},
             index: null,
             priorityLevel: null,
-            showCompleted: false
+            showCompleted: false,
+            fade: new Animated.Value(0),
+            emptyCompletedList: this.props.list.todo.some(val => val.completed) ? false: true
         }
     }
 
@@ -51,9 +55,11 @@ class TodoScreen extends React.Component {
         let list = this.props.list;
         list.todo[index].completed = !list.todo[index].completed
         this.props.updateList(list)
+        this.props.list.todo.every(val => !val.completed) ? this.setState({fade: new Animated.Value(0)}) : null
     }
 
     handleCompletedDelete = (list) => {
+        this.setState({fade: new Animated.Value(0)})
         const newlist = list.todo.filter((todo) => !todo.completed);
         this.props.list.todo = newlist
         this.props.updateList(this.props.list);
@@ -137,7 +143,6 @@ class TodoScreen extends React.Component {
                         date.getMonth() === new Date().getMonth() && 
                         date.getFullYear() === new Date().getFullYear()) : null
 
-        if(!item.completed)
         return (
             <Swipeable 
                         renderRightActions={(_, drag) => this.rightView(drag, index, item)} 
@@ -187,7 +192,7 @@ class TodoScreen extends React.Component {
                     <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center'}}>
                         <TouchableOpacity 
                             onPress={() => this.toggleCompleted(i)}>
-                            <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
+                            <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {this.props.list.color} />
                         </TouchableOpacity>
                         <View style = {{flexDirection: 'row', flexGrow: 1}}>
                             {item.priority === 'High' && <Text style = {{fontSize: 16, color: '#0E86D4'}}>!!! </Text>}
@@ -207,6 +212,33 @@ class TodoScreen extends React.Component {
                 </View>
             )
         })
+    }
+
+    fadeIn = () => {
+        Animated.timing(this.state.fade, {
+            toValue: 0.5,
+            duration: 500,
+            useNativeDriver: true
+        }).start()
+    }
+
+
+    renderListFooter = () => {
+        this.fadeIn()
+        return (
+            <Animated.View style = {{opacity: this.state.fade}}>
+                <View style = {{paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <TouchableOpacity style = {{flexDirection: 'row', gap: 10, alignItems: 'center'}} onPress={() => this.setState({showCompleted: !this.state.showCompleted})}>
+                        <Icon name={this.state.showCompleted ? 'eye-slash' : 'eye'} size={15}/>
+                        <Text style = {{fontWeight: 400}}>{this.state.showCompleted ? 'Hide Completed' : 'Show Completed'}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity  onPress={this.alertDeleteCompleted}>
+                        <Text style = {{fontWeight: 400, paddingRight: 20}}>Clear Completed</Text>
+                    </TouchableOpacity>
+                </View>
+                {this.state.showCompleted && this.renderCompleted(list)}
+            </Animated.View>
+        )
     }
 
     render(){
@@ -245,23 +277,22 @@ class TodoScreen extends React.Component {
                 <View style = {{flex: 1}}>
                     
                     <KeyboardAwareFlatList
-                        data={list.todo}
+                        data={list.todo.filter(val => !val.completed)}
                         keyExtractor={(item) => item.key}
-                        renderItem={({item, index}) => (this.renderList(item, index))}
+                        renderItem={({item, index}) => 
+                                    (<CustomInput item = {item} index={index}
+                                                  list={list} handleDelete = {(index) => this.handleDelete(index)}
+                                                  checkInput = {(item, index) => this.checkInput(item, index)}
+                                                  handleInput = {(text, item) => this.handleInput(text, item)}
+                                                  toggleCompleted = {index => this.toggleCompleted(index)}
+                                                  swipeRef = {this.state.swipeRef}
+                                                  focus = {this.state.focus}
+                                                  updateList = {this.props.updateList}
+                                                  subtext={'date'}
+                                    />)}
                         ListFooterComponent={
-                            list.todo.some(val => val.completed) && 
-                            <View>
-                            <View style = {{paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <TouchableOpacity style = {{flexDirection: 'row', gap: 10, alignItems: 'center'}} onPress={() => this.setState({showCompleted: !this.state.showCompleted})}>
-                                    <Icon name={this.state.showCompleted ? 'eye-slash' : 'eye'} size={15} color={list.color}/>
-                                    <Text style = {{fontWeight: 400, color: list.color}}>{this.state.showCompleted ? 'Hide Completed' : 'Show Completed'}</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity  onPress={this.alertDeleteCompleted}>
-                                    <Text style = {{fontWeight: 400, color: list.color, paddingRight: 20}}>Clear Completed</Text>
-                                </TouchableOpacity>
-                            </View>
-                            {this.state.showCompleted && this.renderCompleted(list)}
-                            </View>
+                            list.todo.some(val => val.completed) &&
+                            this.renderListFooter(list)
                         }
                     />
                 </View>

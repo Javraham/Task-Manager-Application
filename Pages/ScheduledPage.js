@@ -104,7 +104,7 @@ class ScheduledPage extends React.Component {
                 }
                 {this.state.emptylist &&
                     <View style = {{alignItems: 'center'}}>
-                        <MaterialCommunityIcons name = {this.props.icon} size={70} color={this.props.color}/>
+                        <Icon name = {this.props.icon} size={70} color={this.props.color}/>
                     </View>
                 }
                 <View></View>

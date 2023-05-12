@@ -16,13 +16,13 @@ class TodayPage extends React.Component{
 
     renderTodaysList = (item) => {
         return item.todo.map((task, index) => {
-            if (this.state.showCompleted || !task.completed)
+            if (!task.completed)
             return (
                 <View key={index}>
                     <View style = {[styles.input, {borderBottomWidth:  0.5}]}>
                         <Icon name = {task.completed ? 'check-circle' : 'circle-thin'} size = {26} />
                         <View>
-                            <Text style = {{ fontSize: 16, color: task.completed ? 'grey' : 'black'}} >{task.name}</Text>
+                            <Text style = {{ fontSize: 16, color: 'black'}} >{task.name}</Text>
                             <Text style = {{color: 'grey'}}>{item.category}</Text>
                         </View>
                     </View>
@@ -30,6 +30,46 @@ class TodayPage extends React.Component{
             )
         })
     }
+
+    renderCompleted = (list) => {
+        return list.map(category => {
+            return category.todo.map((item, i) => {
+                if(!item.completed) return
+                return (
+                    <View key={i} style = {[styles.input, {borderBottomWidth:  0.5, opacity: 0.5}]}>
+                           <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
+                            <View>
+                                <View style = {{flexDirection: 'row', flexGrow: 1}}>
+                                    {item.priority === 'High' && <Text style = {{fontSize: 16, color: '#0E86D4'}}>!!! </Text>}
+                                    <Text
+                                        style = {{ fontSize: 16, flexGrow: 1, color: 'black'}} 
+                                    >{item.name}</Text>
+                                </View>
+                                <Text style = {{color: 'grey'}}>{category.category}</Text>
+                            </View>
+                        </View>
+                )
+            })
+        })
+    }
+
+    renderListFooter = (list) => {
+        return (
+            <View style = {{opacity: this.state.fade}}>
+                <View style = {{paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <TouchableOpacity style = {{flexDirection: 'row', gap: 10, alignItems: 'center'}} onPress={() => this.setState({showCompleted: !this.state.showCompleted})}>
+                        <Icon name={this.state.showCompleted ? 'eye-slash' : 'eye'} size={15}/>
+                        <Text style = {{fontWeight: 400}}>{this.state.showCompleted ? 'Hide Completed' : 'Show Completed'}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity  onPress={this.alertDeleteCompleted}>
+                        <Text style = {{fontWeight: 400, paddingRight: 20}}>Clear Completed</Text>
+                    </TouchableOpacity>
+                </View>
+                {this.state.showCompleted && this.renderCompleted(list)}
+            </View>
+        )
+    }
+
     render() {
         list = this.props.list
         return (
@@ -44,14 +84,17 @@ class TodayPage extends React.Component{
                 </View>
                 {!this.state.emptylist &&
                 <View style = {{flex: 1}}>
-                <TouchableOpacity style = {{flexDirection: 'row', gap: 10, alignItems: 'center'}} onPress={() => this.setState({showCompleted: !this.state.showCompleted})}>
-                        <Icon name={this.state.showCompleted ? 'eye-slash' : 'eye'} size={15}/>
-                        <Text style = {{fontWeight: 400}}>{this.state.showCompleted ? 'Hide Completed' : 'Show Completed'}</Text>
-                </TouchableOpacity>
+                
                 <FlatList
                     data={list}
                     keyExtractor={(item, index) => index}
-                    renderItem={({item, index}) => (this.renderTodaysList(item, index))}/>
+                    renderItem={({item, index}) => (this.renderTodaysList(item, index))}
+                    ListFooterComponent={
+                        list.some(item => item.todo.some(val => val.completed)) &&
+                        this.renderListFooter(list)
+                    }
+                    />
+                    
                 </View>
                 }
                 {this.state.emptylist &&
