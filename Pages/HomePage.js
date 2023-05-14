@@ -57,6 +57,11 @@ class HomePage extends React.Component {
         })
     }
 
+    updateCategory = async (newList) => {
+        const update = doc(db, 'lists', newList.id)
+        await updateDoc(update, {category: newList.category, icon: newList.icon, color: newList.color})
+    }
+
     deleteList = async (list) => {
         await deleteDoc(doc(db, 'lists', list.id))
     }
@@ -170,7 +175,7 @@ class HomePage extends React.Component {
                             horizontal = {true}
                             showsHorizontalScrollIndicator = {false}
                             renderItem={({item}) => (
-                                <Categories list = {item} updateList = {() => this.updateList(list)} deleteList = {() => this.deleteList(list)}/>
+                                <Categories updateCategory = {(list) => this.updateCategory(list)} list = {item} updateList = {() => this.updateList(list)} deleteList = {() => this.deleteList(list)}/>
                         )}
                         />
                     </View>

@@ -9,6 +9,7 @@ import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import DetailPage from './Details';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import CustomInput from '../components/CustomInput';
+import EditCategory from './EditCategory';
 
 
 class TodoScreen extends React.Component {
@@ -26,7 +27,8 @@ class TodoScreen extends React.Component {
             priorityLevel: null,
             showCompleted: false,
             fade: new Animated.Value(0),
-            emptyCompletedList: this.props.list.todo.some(val => val.completed) ? false: true
+            emptyCompletedList: this.props.list.todo.some(val => val.completed) ? false: true,
+            editVisibility: false
         }
     }
 
@@ -134,7 +136,7 @@ class TodoScreen extends React.Component {
     }
 
     handleEdit = () => {
-        this.setState({visible: false})
+        this.setState({editVisibility: true, visible: false})
     }
 
     renderList = (item, index) => {
@@ -251,6 +253,9 @@ class TodoScreen extends React.Component {
                         item = {this.state.item} 
                         index = {this.state.index}
                         update = {this.props.updateList}/>
+                </Modal>
+                <Modal visible = {this.state.editVisibility} animationType='slide'>
+                    <EditCategory list = {list} close = {() => this.setState({editVisibility: false})} editCategory = {(list) => this.props.updateCategory(list)}/>
                 </Modal>
                 <View style = {{flex: 1, justifyContent: 'space-between', marginLeft: 20}}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>

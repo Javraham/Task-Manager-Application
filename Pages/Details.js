@@ -93,7 +93,7 @@ function DetailPage(props) {
             </View>
             <View style = {[styles.field, {justifyContent: 'flex-start'}]}>
                 <Text style = {{fontSize: 16, fontWeight: 400}}>Name: </Text>
-                <Text style = {{fontSize: 16, fontWeight: 400, color: 'grey'}} numberOfLines={1}>{props.item.name}</Text>
+                <Text style = {{fontSize: 16, fontWeight: 400, color: 'grey', width: '80%'}} numberOfLines={1}>{props.item.name}</Text>
             </View>
             <View style = {styles.field}>
                 <View>
@@ -104,7 +104,7 @@ function DetailPage(props) {
                     <Pressable disabled = {pressable} onPress={() => handleShow()} style = {[styles.showDate, {backgroundColor: showDate ? '#D5F5E3' : 'white',}]}>
                         <Icon name='calendar-plus-o' size={25} color={'#2ECC71'} />
                     </Pressable>
-                    {showDate && <DateTimePicker value = {date ?? new Date()} minimumDate={new Date()} onChange={changeDate}/>}
+                    {showDate && <DateTimePicker value = {date ?? new Date()} onChange={changeDate}/>}
                 </View>
             </View>
             <View style = {{flexDirection: 'row'}}>

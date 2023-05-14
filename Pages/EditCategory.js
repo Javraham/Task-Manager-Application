@@ -4,18 +4,17 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 
-function AddCategory(props){
+function EditCategory(props){
     const date = new Date();
     const timestamp = Date.now()
     const BGcolor = ['#FAAB78', '#7FE9DE', '#E97777', '#7FB77E', '#B2A4FF', '#40DFEF', '#F7D8BA', '#FF87B2', 'gold']
     const icons = ['format-list-bulleted', 'weather-sunny', 'moon-waning-crescent', 'globe-model', 'briefcase-outline', 'run', 'weight-lifter'
                     ,'gamepad-variant-outline', 'camera-outline', 'food-outline', 'music', 'cards-heart-outline', 'car-hatchback', 'brush',
                     'home-outline', 'filmstrip', 'wrench-outline', 'shopping-outline', 'school-outline', 'airplane', 'shower']
-    const [text, setText] = useState('');
-    const [color, setColor] = useState(BGcolor[0])
-    const [icon, setIcon] = useState(icons[0])
-    const [error, setError] = useState(false)
-    const [disable, setDisable] = useState(true)
+    const [text, setText] = useState(props.list.category);
+    const [color, setColor] = useState(props.list.color)
+    const [icon, setIcon] = useState(props.list.icon)
+    const [disable, setDisable] = useState(false)
 
     const renderColor = () => {
         return BGcolor.map((color) => {
@@ -40,15 +39,9 @@ function AddCategory(props){
 
     }
 
-    const createCategory = (text) => {
-        if (text.length === 0){
-            setError(true)
-        }
-        else{
-            props.add({category: text, color: color, icon: icon, todo: [], timestamp: timestamp})
-            setText('')
-            props.close();
-        }
+    const editCategory = (text) => {
+        props.editCategory({category: text, color: color, icon: icon, todo: props.list.todo, id: props.list.id})
+        props.close();
     }
 
     const handleText = (text) => {
@@ -63,18 +56,14 @@ function AddCategory(props){
                     <Icon name = 'times' size = {30}/>
                 </TouchableOpacity>
                 <MaterialCommunityIcons name = {icon} size = {50} color={color}/>
-                <TouchableOpacity disabled = {disable} onPress = {() => createCategory(text)}>
+                <TouchableOpacity disabled = {disable} onPress = {() => editCategory(text)}>
                     <Text style = {{fontSize: 18, color: disable ? 'grey' : color, fontWeight: 600}}>Save</Text>
                 </TouchableOpacity>
             </View>
             <View style = {{gap: 20, alignItems: 'center'}}>
                 <Text style = {styles.header}>Add Task List</Text>
                 <View style = {{width: '90%'}}>
-                    <TextInput maxLength = {30} placeholder='Title' style = {styles.input} onChangeText={text => handleText(text)}/>
-                    {error && <View style = {{flexDirection: 'row', gap: 5, paddingTop: 5, alignItems: 'center'}}>
-                                <Icon name = 'exclamation-triangle' color = {'red'}/>
-                                <Text style = {{color: 'red'}}>Please enter a project name</Text>
-                            </View>}
+                    <TextInput maxLength = {30} placeholder='Title' style = {styles.input} onChangeText={text => handleText(text)} defaultValue = {text}/>
                 </View>
                 <View style = {styles.color}>
                     {renderColor()}
@@ -89,7 +78,7 @@ function AddCategory(props){
     
 }
 
-export default AddCategory;
+export default EditCategory;
 
 const styles = StyleSheet.create({
     container: {

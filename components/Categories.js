@@ -10,7 +10,7 @@ import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 
 
 
-function Categories({navigation, list, updateList, deleteList}) {
+function Categories({navigation, list, updateList, deleteList, updateCategory}) {
     const [showList, setShow] = useState(false)
     const completedTasks = list.todo.filter(todo => todo.completed == true)
 
@@ -33,7 +33,7 @@ function Categories({navigation, list, updateList, deleteList}) {
     return (
         <View>
             <Modal visible = {showList} onRequestClose={() => toggleShow()} animationType='slide'>
-                <TodoScreen list = {list} close = {() => toggleShow()} updateList = {updateList} deleteList = {deleteList}/>
+                <TodoScreen list = {list} close = {() => toggleShow()} updateList = {updateList} deleteList = {deleteList} updateCategory = {(list) => updateCategory(list)}/>
             </Modal>
                 <Pressable style = {styles.container} onPress={() => toggleShow()} >
                     <View style = {[styles.TopCon, {backgroundColor: list.color}]}>
