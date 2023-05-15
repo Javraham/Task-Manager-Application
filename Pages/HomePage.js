@@ -7,7 +7,7 @@ import Summary from '../components/Summary';
 import TodayTasks from '../components/TodayTasks';
 import {db} from '../firebase'
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import {query, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc, Timestamp, serverTimestamp} from 'firebase/firestore'
+import {query, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc, Timestamp, serverTimestamp, arrayUnion} from 'firebase/firestore'
 
 
 class HomePage extends React.Component {
@@ -50,11 +50,22 @@ class HomePage extends React.Component {
         })
     }
 
-    updateList = async () => {
-        const updated = doc(db, 'lists', list.id)
+    updateList = async (newList) => {
+        console.log(newList.todo)
+        const updated = doc(db, 'lists', newList.id)
         await updateDoc(updated, {
-            todo: list.todo,
+            todo: newList.todo,
         })
+    }
+
+    updateTodayList = async (newList, index, i) => {
+        const findIndex = this.state.lists[index].todo.findIndex((val) => val.key === newList.todo[i].key)
+        const todos = this.state.lists[index].todo.map((val, idx) => idx === findIndex ? newList.todo[i] : val)
+        const updated = doc(db, 'lists', newList.id)
+        await updateDoc(updated, {
+            'todo': todos,
+        })
+
     }
 
     updateCategory = async (newList) => {
@@ -157,7 +168,7 @@ class HomePage extends React.Component {
                     <Text style = {styles.name}>Jonathan Avraham</Text>
                 </View>
                 <View>
-                    <TodayTasks list = {this.getTodaysList()} updateList = {() => this.updateList(list)}/>
+                    <TodayTasks list = {this.getTodaysList()} updateList = {(list, index, i) => this.updateTodayList(list, index, i)}/>
                 </View>
                 
                 <View style = {{ gap: 20, height: '30%'}}>
@@ -175,7 +186,7 @@ class HomePage extends React.Component {
                             horizontal = {true}
                             showsHorizontalScrollIndicator = {false}
                             renderItem={({item}) => (
-                                <Categories updateCategory = {(list) => this.updateCategory(list)} list = {item} updateList = {() => this.updateList(list)} deleteList = {() => this.deleteList(list)}/>
+                                <Categories updateCategory = {(list) => this.updateCategory(list)} list = {item} updateList = {(list) => this.updateList(list)} deleteList = {() => this.deleteList(list)}/>
                         )}
                         />
                     </View>

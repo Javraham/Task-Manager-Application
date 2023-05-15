@@ -40,7 +40,7 @@ function EditCategory(props){
     }
 
     const editCategory = (text) => {
-        props.editCategory({category: text, color: color, icon: icon, todo: props.list.todo, id: props.list.id})
+        props.updateCategory({category: text, color: color, icon: icon, todo: props.list.todo, id: props.list.id})
         props.close();
     }
 

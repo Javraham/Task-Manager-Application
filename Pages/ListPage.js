@@ -48,8 +48,8 @@ class TodoScreen extends React.Component {
         }
     }
 
-    handleInput = (text, index) => {
-        index.name = text
+    handleInput = (text, item) => {
+        item.name = text
     }
 
     toggleCompleted(index) {
@@ -139,47 +139,6 @@ class TodoScreen extends React.Component {
         this.setState({editVisibility: true, visible: false})
     }
 
-    renderList = (item, index) => {
-        const date = item.Date !== null ? (!(item.Date instanceof Date) ? item.Date.toDate() : item.Date) : null
-        const isToday = date !== null ? (date.getDate() === new Date().getDate() && 
-                        date.getMonth() === new Date().getMonth() && 
-                        date.getFullYear() === new Date().getFullYear()) : null
-
-        return (
-            <Swipeable 
-                        renderRightActions={(_, drag) => this.rightView(drag, index, item)} 
-                        onSwipeableWillOpen={() => this.setState({edit: false})}
-                        onSwipeableWillClose={() => this.setState({edit: true})}
-                        ref={(swipe) => this.state.swipeRef[index] = swipe}>
-                        <View style = {{paddingVertical: 10, borderBottomWidth: 0.5, borderColor: 'lightgrey'}}>
-                            <View style = {{flexDirection: 'row', gap: 10, alignItems: 'center'}}>
-                                <TouchableOpacity 
-                                    onPress={() => this.toggleCompleted(index)}>
-                                    <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
-                                </TouchableOpacity>
-                                <View style = {{flexDirection: 'row', flexGrow: 1}}>
-                                    {item.priority === 'High' && <Text style = {{fontSize: 16, color: '#0E86D4'}}>!!! </Text>}
-                                    <TextInput  maxLength = {40} autoFocus = {this.state.focus}
-                                        onBlur = {() => this.checkInput(item, index)}
-                                        onChangeText = {text => this.handleInput(text, item)} 
-                                        defaultValue =  {item.name}
-                                        editable = {this.state.edit && !item.completed}
-                                        style = {{ fontSize: 16, flexGrow: 1, color: item.completed ? 'grey' : 'black'}} 
-                                        />
-                                </View>
-                            </View>
-                                {date && 
-                                    <View style = {{flexDirection: 'row', gap: 5, alignItems: 'center', paddingHorizontal: 31}}>
-                                        <Icon name='calendar' color = {this.props.list.color} size = {15}/>
-                                        <Text style = {{paddingVertical: 3, color: 'grey'}}>
-                                            {isToday ? 'Today' : date.getFullYear() + '-' + (date.getMonth()+1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0')}
-                                        </Text>
-                                    </View>
-                                }
-                        </View>
-                    </Swipeable>
-        )    
-    }
 
     renderCompleted = (list) => {
         return list.todo.map((item, i) => {
@@ -255,7 +214,7 @@ class TodoScreen extends React.Component {
                         update = {this.props.updateList}/>
                 </Modal>
                 <Modal visible = {this.state.editVisibility} animationType='slide'>
-                    <EditCategory list = {list} close = {() => this.setState({editVisibility: false})} editCategory = {(list) => this.props.updateCategory(list)}/>
+                    <EditCategory list = {list} close = {() => this.setState({editVisibility: false})} updateCategory = {(list) => this.props.updateCategory(list)}/>
                 </Modal>
                 <View style = {{flex: 1, justifyContent: 'space-between', marginLeft: 20}}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>

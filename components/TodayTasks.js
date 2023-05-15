@@ -89,7 +89,7 @@ function TodayTasks(props) {
     return (
         <View>
             <Modal visible = {showList} onRequestClose={() => toggleShow()} animationType='slide'>
-                <TodayPage list = {todayList} icon = 'calendar-today' close = {() => toggleShow()} updateList = {props.updateList} rejectDelete = {true}/>
+                <TodayPage fullList = {props.list} list = {todayList} icon = 'calendar-today' close = {() => toggleShow()} updateList = {(list, index, i) => props.updateList(list, index, i)} rejectDelete = {true}/>
             </Modal>
             <Pressable onPress={() => toggleShow() } style = {styles.container}>
                 <View style = {{flexDirection: 'row', justifyContent: 'space-between'}}>

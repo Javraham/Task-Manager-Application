@@ -10,7 +10,6 @@ function CustomInput({item, index, list, subtext, ...props}) {
 
     const [edit, setEdit] = useState(true)
     const [infoVisible, setVisible] = useState(false)
-    const textInputRef = useRef(null);
 
     const rightView = (drag, index, item) => {
         const opacity = drag.interpolate({
@@ -40,14 +39,19 @@ function CustomInput({item, index, list, subtext, ...props}) {
             const isToday = date !== null ? (date.getDate() === new Date().getDate() && 
                     date.getMonth() === new Date().getMonth() && 
                     date.getFullYear() === new Date().getFullYear()) : null
+            const present = date === null ? null : 
+                            date.getFullYear() < new Date().getFullYear() ? false : 
+                            date.getMonth() < new Date().getMonth() && date.getFullYear() === new Date().getFullYear() ? false :
+                            date.getDate() < new Date().getDate() && date.getFullYear() === new Date().getFullYear() && date.getMonth() === new Date().getMonth() ? false :
+                            true
             return(
-                date && 
+                date &&
                     <View style = {{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
                         <Icon name='calendar' color = {list.color} size = {15}/>
-                        <Text style = {{paddingVertical: 3, color: date.getTime() < Date.now() ? 'red' : 'grey'}}>
+                        <Text style = {{paddingVertical: 3, color: !present ? 'red' : 'grey'}}>
                             {isToday ? 'Today' : date.getFullYear() + '-' + (date.getMonth()+1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0')}
                         </Text>
-                        {date.getTime() < Date.now() && <AntDesign name='exclamationcircleo' color={'red'} size={15} />}
+                        {!present && <AntDesign name='exclamationcircleo' color={'red'} size={15} />}
                     </View>
             )
         }
@@ -73,7 +77,8 @@ function CustomInput({item, index, list, subtext, ...props}) {
                 renderRightActions={(_, drag) => rightView(drag, index, item)} 
                 onSwipeableWillOpen={() => setEdit(false)}
                 onSwipeableWillClose={() => setEdit(true)}
-                ref={(swipe) => props.swipeRef[index] = swipe}>
+                ref={(swipe) => props.swipeRef[index] = swipe}
+                >
                     <View style = {{flexDirection: 'row', gap: 10, paddingVertical: 10, borderBottomWidth: 0.5, borderColor: 'lightgrey'}}>
                         <TouchableOpacity 
                             onPress={() => props.toggleCompleted(index)}>

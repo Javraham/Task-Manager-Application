@@ -2,6 +2,7 @@ import React from 'react';
 import { View, SafeAreaView, StyleSheet, Text, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import CustomInput from '../components/CustomInput';
 
 
 class TodayPage extends React.Component{
@@ -10,39 +11,77 @@ class TodayPage extends React.Component{
         this.state = {
             emptylist: props.list.length > 0 ? false : true,
             showCompleted: false,
+            swipeRef: [],
+            focus: false,
+
         };
     }
 
+    toggleCompleted = (index, i) => {
+        this.setState({focus: false})
+        let list = this.props.list;
+        list[index].todo[i].completed = !list[index].todo[i].completed
+        this.props.updateList(list[index], index, i)
+    }
 
-    renderTodaysList = (item) => {
-        return item.todo.map((task, index) => {
+    // handleDelete = (index) => {
+    //     const newlist = this.props.list.todo.filter((todo, i) => i !== index);
+    //     this.props.list.todo = newlist
+    //     this.props.updateList(list[index], index, i);
+    //     if(this.props.list.length == 0){
+    //         this.setState({emptylist: true})
+    //     }
+    // }
+
+    handleInput = (text, item) => {
+        item.name = text
+    }
+
+    checkInput = (item, index) => {
+        if(item.name == ""){
+            this.handleDelete(index)
+        }
+        else{
+            this.props.updateList(this.props.list)
+        }
+    }
+
+    renderTodaysList = (item, index) => {
+        return item.todo.map((task, i) => {
             if (!task.completed)
             return (
-                <View key={index}>
-                    <View style = {[styles.input, {borderBottomWidth:  0.5}]}>
-                        <Icon name = {task.completed ? 'check-circle' : 'circle-thin'} size = {26} />
-                        <View>
-                            <Text style = {{ fontSize: 16, color: 'black'}} >{task.name}</Text>
-                            <Text style = {{color: 'grey'}}>{item.category}</Text>
-                        </View>
-                    </View>
+                <View key={i}>
+                    <CustomInput 
+                        item = {task} 
+                        index={index}
+                        list={item} 
+                        // handleDelete = {(index) => this.handleDelete(index)}
+                        checkInput = {(item, index) => this.checkInput(item, index)}
+                        handleInput = {(text, item) => this.handleInput(text, item)}
+                        toggleCompleted = {index => this.toggleCompleted(index, i)}
+                        swipeRef = {this.state.swipeRef}
+                        focus = {this.state.focus}
+                        subtext={'category'}
+                    />
                 </View>
             )
         })
     }
 
     renderCompleted = (list) => {
-        return list.map(category => {
+        return list.map((category, index) => {
             return category.todo.map((item, i) => {
                 if(!item.completed) return
                 return (
                     <View key={i} style = {[styles.input, {borderBottomWidth:  0.5, opacity: 0.5}]}>
-                           <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {list.color} />
+                            <TouchableOpacity onPress={() => this.toggleCompleted(index, i)}>
+                                <Icon name = {item.completed ? 'check-circle' : 'circle-thin'} size = {26} color = {category.color} />
+                            </TouchableOpacity>
                             <View>
                                 <View style = {{flexDirection: 'row', flexGrow: 1}}>
                                     {item.priority === 'High' && <Text style = {{fontSize: 16, color: '#0E86D4'}}>!!! </Text>}
                                     <Text
-                                        style = {{ fontSize: 16, flexGrow: 1, color: 'black'}} 
+                                        style = {{ fontSize: 16, flexGrow: 1}} 
                                     >{item.name}</Text>
                                 </View>
                                 <Text style = {{color: 'grey'}}>{category.category}</Text>
