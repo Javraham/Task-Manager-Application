@@ -12,8 +12,7 @@ class TodayPage extends React.Component{
             emptylist: props.list.length > 0 ? false : true,
             showCompleted: false,
             swipeRef: [],
-            focus: false,
-
+            focus: false
         };
     }
 

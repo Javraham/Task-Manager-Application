@@ -13,8 +13,8 @@ function ProgressBar(props) {
     }, [props.percent])
 
     const progress = animate.interpolate({
-        inputRange: [0, props.percent],
-        outputRange: ["0%", props.percent+'%']
+        inputRange: [0, props.percent + 1],
+        outputRange: ["0%", props.percent + 1 +'%']
     })
 
     return (
@@ -35,6 +35,6 @@ const styles = StyleSheet.create({
 
     progress: {
         borderRadius: 5,
-        height: 10,
+        height: '100%',
     }
 })

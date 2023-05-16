@@ -75,6 +75,8 @@ function Summary(props) {
             return dateA - dateB;
         })
     }
+
+    console.log(ScheduledList())
     
     const renderPage = () => {
         if (props.title === 'Completed' || props.title === 'All'){

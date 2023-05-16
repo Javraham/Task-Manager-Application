@@ -39,10 +39,11 @@ class ScheduledPage extends React.Component {
     }
 
     renderDates = (item, index) => {
-        
-        const date = new Date(item[0])
-        let month;
-        let day;
+        const moment = require('moment-timezone')
+        const date = moment(item[0]).toDate()
+        const today = moment().format('YYYY-MM-DD')
+        let month = 'August';
+        let day = "sun";
         switch(date.getMonth()){
             case 0: month = 'Jan'; break;
             case 1: month = 'Feb'; break;
@@ -72,7 +73,7 @@ class ScheduledPage extends React.Component {
         return (
             <View style = {{gap: 10, paddingVertical: 10, borderBottomWidth: index < this.props.list.length-1 ? 2 : 0, borderColor: 'lightgrey'}}>
                 <View style = {{gap: 10 ,marginLeft: 20}}>
-                    <Text style = {{fontSize: 17, color: 'grey', fontWeight: 600}}>{item[0] === new Date().toISOString().split('T')[0] ? 'Today' : day + ' ' + month + ' ' + date.getDate() + ', ' + date.getFullYear()}</Text>
+                    <Text style = {{fontSize: 17, color: 'grey', fontWeight: 600}}>{item[0] === today ? 'Today' : day + ' ' + month + ' ' + date.getDate() + ', ' + date.getFullYear()}</Text>
                 </View>
                 {this.renderList(item[1], index)}
             </View>
@@ -83,6 +84,7 @@ class ScheduledPage extends React.Component {
 
     render(){
         list = this.props.list
+        console.log(list)
         return (
             <SafeAreaView style = {styles.container}>
                 <View style = {{flex: 1, justifyContent: 'space-between'}}>
