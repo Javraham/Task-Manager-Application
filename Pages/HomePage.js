@@ -51,7 +51,6 @@ class HomePage extends React.Component {
     }
 
     updateList = async (newList) => {
-        console.log(newList.todo)
         const updated = doc(db, 'lists', newList.id)
         await updateDoc(updated, {
             todo: newList.todo,
@@ -59,13 +58,22 @@ class HomePage extends React.Component {
     }
 
     updateTodayList = async (newList, index, i) => {
-        const findIndex = this.state.lists[index].todo.findIndex((val) => val.key === newList.todo[i].key)
-        const todos = this.state.lists[index].todo.map((val, idx) => idx === findIndex ? newList.todo[i] : val)
+        console.log(newList.todo, index, i)
+        const findIndex = this.getTodaysList()[index].todo.findIndex((val) => val.key === newList.todo[i].key)
+        const todos = this.getTodaysList()[index].todo.map((val, idx) => idx === findIndex ? newList.todo[i] : val)
         const updated = doc(db, 'lists', newList.id)
         await updateDoc(updated, {
             'todo': todos,
         })
+    }
 
+    deleteTodo = async (newList, index, i) => {
+        const findIndex = this.getTodaysList()[index].todo.findIndex((val) => val.key === newList.todo[i].key)
+        const todos = this.getTodaysList()[index].todo.filter((val, idx) => idx !== findIndex)
+        const updated = doc(db, 'lists', newList.id)
+        await updateDoc(updated, {
+            'todo': todos,
+        })
     }
 
     updateCategory = async (newList) => {
@@ -97,7 +105,7 @@ class HomePage extends React.Component {
                     date.getDate() === new Date().getDate())
             })}
         });
-        return todayList
+        return todayList.filter(val => val.todo.length > 0)
     }
 
     getScheduledList = () => {
@@ -168,7 +176,10 @@ class HomePage extends React.Component {
                     <Text style = {styles.name}>Jonathan Avraham</Text>
                 </View>
                 <View>
-                    <TodayTasks list = {this.getTodaysList()} updateList = {(list, index, i) => this.updateTodayList(list, index, i)}/>
+                    <TodayTasks 
+                        list = {this.getTodaysList()} 
+                        updateList = {(list, index, i) => this.updateTodayList(list, index, i)} 
+                        deleteTodo = {(list, index, i) => this.deleteTodo(list, index, i)}/>
                 </View>
                 
                 <View style = {{ gap: 20, height: '30%'}}>

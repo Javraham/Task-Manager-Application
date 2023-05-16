@@ -39,8 +39,8 @@ class ScheduledPage extends React.Component {
     }
 
     renderDates = (item, index) => {
-        const moment = require('moment')
-        const date = moment(item[0]).toDate()
+        
+        const date = new Date(item[0])
         let month;
         let day;
         switch(date.getMonth()){

@@ -24,26 +24,29 @@ class TodayPage extends React.Component{
         this.props.updateList(list[index], index, i)
     }
 
-    // handleDelete = (index) => {
-    //     const newlist = this.props.list.todo.filter((todo, i) => i !== index);
-    //     this.props.list.todo = newlist
-    //     this.props.updateList(list[index], index, i);
-    //     if(this.props.list.length == 0){
-    //         this.setState({emptylist: true})
-    //     }
-    // }
+    handleDelete = (index, i) => {
+        let list = this.props.list;
+        this.props.deleteTodo(list[index], index, i);
+    }
+
 
     handleInput = (text, item) => {
         item.name = text
     }
 
-    checkInput = (item, index) => {
+    checkInput = (item, index, i) => {
         if(item.name == ""){
             this.handleDelete(index)
         }
         else{
-            this.props.updateList(this.props.list)
+            this.props.updateList(this.props.list[index], index, i)
         }
+    }
+
+    closeSwipe = () => {
+        this.state.swipeRef.forEach((swipeable) => {
+                swipeable?.close()
+            })
     }
 
     renderTodaysList = (item, index) => {
@@ -54,14 +57,17 @@ class TodayPage extends React.Component{
                     <CustomInput 
                         item = {task} 
                         index={index}
+                        secondIndex = {i}
                         list={item} 
-                        // handleDelete = {(index) => this.handleDelete(index)}
-                        checkInput = {(item, index) => this.checkInput(item, index)}
+                        handleDelete = {(index) => this.handleDelete(index, i)}
+                        checkInput = {(item, index) => this.checkInput(item, index, i)}
                         handleInput = {(text, item) => this.handleInput(text, item)}
                         toggleCompleted = {index => this.toggleCompleted(index, i)}
                         swipeRef = {this.state.swipeRef}
                         focus = {this.state.focus}
                         subtext={'category'}
+                        updateList = {(list, index, i) => this.props.updateList(list, index, i)}
+                        todayFields = {true}
                     />
                 </View>
             )
@@ -92,6 +98,13 @@ class TodayPage extends React.Component{
         })
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.list !== prevProps.list){
+            if(this.props.list.length === 0)
+                this.setState({emptylist: true})
+        }
+    }
+
     renderListFooter = (list) => {
         return (
             <View style = {{opacity: this.state.fade}}>
@@ -112,7 +125,7 @@ class TodayPage extends React.Component{
     render() {
         list = this.props.list
         return (
-            <SafeAreaView style = {styles.container}>
+            <SafeAreaView style = {styles.container} onTouchStart={() => this.closeSwipe()}>
                 <View style = {{flex: 1, justifyContent: 'space-between'}}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
                     <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' size = {30}/></TouchableOpacity>

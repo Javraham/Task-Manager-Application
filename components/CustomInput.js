@@ -71,7 +71,11 @@ function CustomInput({item, index, list, subtext, ...props}) {
                     close = {() => setVisible(false)} 
                     item = {item} 
                     index = {index}
-                    update = {props.updateList}/>
+                    update = {((list, index, i) => props.updateList(list, index, i))}
+                    todayFields = {props.todayFields}
+                    secondIndex = {props.secondIndex}
+                    />
+                
             </Modal>
             <Swipeable 
                 renderRightActions={(_, drag) => rightView(drag, index, item)} 
@@ -94,7 +98,8 @@ function CustomInput({item, index, list, subtext, ...props}) {
                                     editable = {edit}
                                     maxLength={40}
                                     style = {{ fontSize: 16, flexGrow: 1, color: 'black'}}
-                                    returnKeyType="done" 
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => props.addItem()}
                                     />
                             </View>
                             {renderSubtext()}

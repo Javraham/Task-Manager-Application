@@ -53,6 +53,7 @@ class TodoScreen extends React.Component {
     }
 
     toggleCompleted(index) {
+        console.log(index)
         this.setState({focus: false})
         let list = this.props.list;
         list.todo[index].completed = !list.todo[index].completed
@@ -202,17 +203,27 @@ class TodoScreen extends React.Component {
         )
     }
 
+    renderList = (item, index) => {
+        if(!item.completed)
+            return (
+            <CustomInput item = {item} index={index}
+                list={list} handleDelete = {(index) => this.handleDelete(index)}
+                checkInput = {(item, index) => this.checkInput(item, index)}
+                handleInput = {(text, item) => this.handleInput(text, item)}
+                toggleCompleted = {index => this.toggleCompleted(index)}
+                swipeRef = {this.state.swipeRef}
+                focus = {this.state.focus}
+                updateList = {(list) => this.props.updateList(list)}
+                subtext={'date'}
+                addItem = {() => this.addItem()}
+                />
+            )
+    }
+
     render(){
         list = this.props.list
         return (
             <SafeAreaView style = {[styles.container, {backgroundColor: '#F9F9F9'}]} onTouchStart={() => this.closeSwipe()}>
-                <Modal visible = {this.state.infoVisible} animationType='slide' transparent>
-                    <DetailPage list = {list} 
-                        close = {() => this.setState({infoVisible: false})} 
-                        item = {this.state.item} 
-                        index = {this.state.index}
-                        update = {this.props.updateList}/>
-                </Modal>
                 <Modal visible = {this.state.editVisibility} animationType='slide'>
                     <EditCategory list = {list} close = {() => this.setState({editVisibility: false})} updateCategory = {(list) => this.props.updateCategory(list)}/>
                 </Modal>
@@ -241,19 +252,9 @@ class TodoScreen extends React.Component {
                 <View style = {{flex: 1}}>
                     
                     <KeyboardAwareFlatList
-                        data={list.todo.filter(val => !val.completed)}
+                        data={list.todo}
                         keyExtractor={(item) => item.key}
-                        renderItem={({item, index}) => 
-                                    (<CustomInput item = {item} index={index}
-                                                  list={list} handleDelete = {(index) => this.handleDelete(index)}
-                                                  checkInput = {(item, index) => this.checkInput(item, index)}
-                                                  handleInput = {(text, item) => this.handleInput(text, item)}
-                                                  toggleCompleted = {index => this.toggleCompleted(index)}
-                                                  swipeRef = {this.state.swipeRef}
-                                                  focus = {this.state.focus}
-                                                  updateList = {this.props.updateList}
-                                                  subtext={'date'}
-                                    />)}
+                        renderItem={({item, index}) => this.renderList(item, index)}
                         ListFooterComponent={
                             list.todo.some(val => val.completed) &&
                             this.renderListFooter(list)

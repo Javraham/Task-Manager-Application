@@ -16,7 +16,6 @@ function DetailPage(props) {
     }
 
     const updateFields = () => {
-        console.log(date)
         list.todo[props.index].priority = level;
         list.todo[props.index].Date = date
         props.update(list);
@@ -83,13 +82,20 @@ function DetailPage(props) {
         }
     }
 
+    const updateToday = () => {
+        list[props.index].todo[props.secondIndex].priority = level;
+        list[props.index].todo[props.secondIndex].Date = date
+        props.update(list[props.index], props.index, props.secondIndex);
+        props.close()
+    }
+
 
     return (
         <SafeAreaView style = {styles.infoContainer}>
             <View style = {{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10}}>
                 <Button title='Close' onPress={() => props.close()}/>
                 <Text style = {{fontSize: 17, fontWeight: 500}}>Details</Text>
-                <Button title='Done' onPress={() => updateFields()}/>
+                <Button title='Done' onPress={() => props.todayFields ? updateToday() : updateFields()}/>
             </View>
             <View style = {[styles.field, {justifyContent: 'flex-start'}]}>
                 <Text style = {{fontSize: 16, fontWeight: 400}}>Name: </Text>
