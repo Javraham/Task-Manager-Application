@@ -58,9 +58,10 @@ class HomePage extends React.Component {
     }
 
     updateTodayList = async (newList, index, i) => {
-        console.log(newList.todo, index, i)
-        const findIndex = this.getTodaysList()[index].todo.findIndex((val) => val.key === newList.todo[i].key)
-        const todos = this.getTodaysList()[index].todo.map((val, idx) => idx === findIndex ? newList.todo[i] : val)
+        const findCategory = this.state.lists.findIndex(val => val.id === newList.id)
+        const findIndex = this.state.lists[findCategory].todo.findIndex((val) => val.key === newList.todo[i].key)
+        const todos = this.state.lists[findCategory].todo.map((val, idx) => idx === findIndex ? newList.todo[i] : val)
+        console.log(findCategory, index, i, todos)
         const updated = doc(db, 'lists', newList.id)
         await updateDoc(updated, {
             'todo': todos,
