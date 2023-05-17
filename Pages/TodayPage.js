@@ -125,7 +125,7 @@ class TodayPage extends React.Component{
         list = this.props.list
         return (
             <SafeAreaView style = {styles.container} onTouchStart={() => this.closeSwipe()}>
-                <View style = {{flex: 1, justifyContent: 'space-between'}}>
+                <View style = {{flex: 1, justifyContent: 'space-between', marginLeft: 20}}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
                     <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' size = {30}/></TouchableOpacity>
                     <Text style = {styles.title} numberOfLines={1}>Today</Text>
@@ -168,7 +168,7 @@ export default TodayPage;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginLeft: 20
+        backgroundColor: '#F4ECF7'
     },
 
     addItem: {

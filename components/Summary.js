@@ -76,8 +76,6 @@ function Summary(props) {
         })
     }
 
-    console.log(ScheduledList())
-    
     const renderPage = () => {
         if (props.title === 'Completed' || props.title === 'All'){
             return (
@@ -117,10 +115,10 @@ function Summary(props) {
             <Modal animationType='slide' visible = {visible} onRequestClose={visible}>
                 {renderPage()}
             </Modal>
-            <Pressable style = {styles.container} onPress={() => setVisibility(true)}>
+            <Pressable style = {[styles.container, {backgroundColor: props.color + 25}]} onPress={() => setVisibility(true)}>
                 <View style = {{gap: 10}}>
                     <Icon name = {props.iconName} color = {props.color} size = {30}/>
-                    <Text style = {{fontSize: 18, fontWeight: 500, color: 'grey'}}>{props.title}</Text>
+                    <Text style = {{fontSize: 18, fontWeight: 500, color: props.color}}>{props.title}</Text>
                 </View>
                 <View style = {{justifyContent: 'center', alignItems: 'center'}}>
                     <View >

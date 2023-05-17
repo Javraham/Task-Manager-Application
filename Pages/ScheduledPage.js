@@ -84,9 +84,8 @@ class ScheduledPage extends React.Component {
 
     render(){
         list = this.props.list
-        console.log(list)
         return (
-            <SafeAreaView style = {styles.container}>
+            <SafeAreaView style = {[styles.container, {backgroundColor: this.props.color + 20}]}>
                 <View style = {{flex: 1, justifyContent: 'space-between'}}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', marginBottom: 20, justifyContent: 'space-between', marginHorizontal: 20}}>
                     <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' color={this.props.color} size = {30}/></TouchableOpacity>
@@ -121,7 +120,6 @@ export default ScheduledPage;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F9F9F9',
     },
 
     title: {

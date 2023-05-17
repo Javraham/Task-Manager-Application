@@ -67,7 +67,7 @@ class SummaryPage extends React.Component {
     render(){
         list = this.props.list
         return (
-            <SafeAreaView style = {styles.container}>
+            <SafeAreaView style = {[styles.container, {backgroundColor: this.props.color + 20}]}>
                 <View style = {{flex: 1, justifyContent: 'space-between'}}>
                 <View style = {{flexDirection: 'row', alignItems: 'center', marginBottom: 20, justifyContent: 'space-between', marginHorizontal: 20}}>
                     <TouchableOpacity onPress={this.props.close}><Icon name = 'chevron-left' color={this.props.color} size = {30}/></TouchableOpacity>

@@ -91,7 +91,7 @@ function DetailPage(props) {
 
 
     return (
-        <SafeAreaView style = {styles.infoContainer}>
+        <SafeAreaView style = {[styles.infoContainer, {backgroundColor: props.list.color + 20}]}>
             <View style = {{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10}}>
                 <Button title='Close' onPress={() => props.close()}/>
                 <Text style = {{fontSize: 17, fontWeight: 500}}>Details</Text>
@@ -107,8 +107,8 @@ function DetailPage(props) {
                     {showDate ? renderDate() : null}
                 </View>
                 <View style = {{flexDirection: 'row', gap: 5}}>
-                    <Pressable disabled = {pressable} onPress={() => handleShow()} style = {[styles.showDate, {backgroundColor: showDate ? '#D5F5E3' : 'white',}]}>
-                        <Icon name='calendar-plus-o' size={25} color={'#2ECC71'} />
+                    <Pressable disabled = {pressable} onPress={() => handleShow()} style = {[styles.showDate, {backgroundColor: showDate ? props.list.color+30 : 'white',}]}>
+                        <Icon name='calendar-plus-o' size={25} color={props.list.color} />
                     </Pressable>
                     {showDate && <DateTimePicker value = {date ?? new Date()} onChange={changeDate}/>}
                 </View>

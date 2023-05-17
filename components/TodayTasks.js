@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable,  Modal, Animated} from 'react-native
 import Icon from 'react-native-vector-icons/FontAwesome';
 import TodayPage from '../Pages/TodayPage';
 import Svg, {Circle} from 'react-native-svg'
-
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 function TodayTasks(props) {
@@ -98,13 +98,14 @@ function TodayTasks(props) {
                     deleteTodo = {(list, index, i) => props.deleteTodo(list, index, i)}
                     rejectDelete = {true}/>
             </Modal>
-            <Pressable onPress={() => toggleShow() } style = {styles.container}>
+            <LinearGradient colors={['#EBDEF0', '#EBDEF0','#E8DAEF', '#E8DAEF']} style = {styles.container} start={{ x: 0, y: 0 }}  end={{ x: 1, y: 0 }}>
+            <Pressable onPress={() => toggleShow() } >
                 <View style = {{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <View style = {{gap: 5}}>
-                        <Text style = {{fontSize: 25, fontWeight: 600}}>Todays Tasks</Text>
+                        <Text style = {{fontSize: 25, fontWeight: 600, }}>Todays Tasks</Text>
                         <View style = {{flexDirection: 'row', alignItems: 'center', gap: 3}}>
-                            <Icon name = 'calendar'/>
-                            <Text>{month} {date.getDate()}, {date.getFullYear()} </Text>
+                            <Icon name = 'calendar' />
+                            <Text >{month} {date.getDate()}, {date.getFullYear()} </Text>
                         </View>
                         <View>
                             {renderItems()}
@@ -115,7 +116,7 @@ function TodayTasks(props) {
                             <Circle cx={center} cy={center} r={radius} stroke="#F9F9F9" strokeWidth={strokeWidth} />
                             <Circle
                                 ref={progress}
-                                cx={center} cy={center} r={radius} stroke={'#B1D7B4'} 
+                                cx={center} cy={center} r={radius} stroke={'#85C1E9'} 
                                 strokeWidth={strokeWidth} strokeDasharray={circumference}
                                 />
                         </Svg>
@@ -128,6 +129,7 @@ function TodayTasks(props) {
                     <Text style = {{textAlign: 'center', fontSize: 18, padding: 5}}>{numComp} of {length} Tasks Completed</Text>
                 </View>
             </Pressable>
+            </LinearGradient >
         </View> 
     )
 }
@@ -136,7 +138,6 @@ export default TodayTasks;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#FFFFFF',
         padding: 20,
         borderRadius: 10
     }

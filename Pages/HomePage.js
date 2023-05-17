@@ -61,7 +61,6 @@ class HomePage extends React.Component {
         const findCategory = this.state.lists.findIndex(val => val.id === newList.id)
         const findIndex = this.state.lists[findCategory].todo.findIndex((val) => val.key === newList.todo[i].key)
         const todos = this.state.lists[findCategory].todo.map((val, idx) => idx === findIndex ? newList.todo[i] : val)
-        console.log(findCategory, index, i, todos)
         const updated = doc(db, 'lists', newList.id)
         await updateDoc(updated, {
             'todo': todos,
@@ -209,7 +208,7 @@ class HomePage extends React.Component {
                          <Summary title = 'All' color = "#2980B9" iconName = 'inbox' list = {this.getRemainingLists()}/>           
                          <Summary title = 'Completed' iconName = 'check' color = "#009B77" list = {this.getCompletedList()}/>
                          <Summary title = 'Priorities' iconName = 'star-o' color = '#F1C40F' list = {this.getPriorityList()}/>
-                         <Summary title = 'Scheduled' iconName = 'calendar-o' color = "red" list = {this.getScheduledList()}/>
+                         <Summary title = 'Scheduled' iconName = 'calendar-o' color = "#E74C3C" list = {this.getScheduledList()}/>
                      </View>
                  </View>
             </SafeAreaView>

@@ -53,7 +53,6 @@ class TodoScreen extends React.Component {
     }
 
     toggleCompleted(index) {
-        console.log(index)
         this.setState({focus: false})
         let list = this.props.list;
         list.todo[index].completed = !list.todo[index].completed
@@ -223,7 +222,7 @@ class TodoScreen extends React.Component {
     render(){
         list = this.props.list
         return (
-            <SafeAreaView style = {[styles.container, {backgroundColor: '#F9F9F9'}]} onTouchStart={() => this.closeSwipe()}>
+            <SafeAreaView style = {[styles.container]} onTouchStart={() => this.closeSwipe()}>
                 <Modal visible = {this.state.editVisibility} animationType='slide'>
                     <EditCategory list = {list} close = {() => this.setState({editVisibility: false})} updateCategory = {(list) => this.props.updateCategory(list)}/>
                 </Modal>

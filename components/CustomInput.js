@@ -98,8 +98,7 @@ function CustomInput({item, index, list, subtext, ...props}) {
                                     editable = {edit}
                                     maxLength={40}
                                     style = {{ fontSize: 16, flexGrow: 1, color: 'black'}}
-                                    returnKeyType="next"
-                                    onSubmitEditing={() => props.addItem()}
+                                    returnKeyType="done"
                                     />
                             </View>
                             {renderSubtext()}

@@ -7,10 +7,13 @@ import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 function EditCategory(props){
     const date = new Date();
     const timestamp = Date.now()
-    const BGcolor = ['#FAAB78', '#7FE9DE', '#E97777', '#7FB77E', '#B2A4FF', '#40DFEF', '#F7D8BA', '#FF87B2', 'gold']
+    const BGcolor = ['#E67E22', '#2980B9', '#1ABC9C', '#C0392B', '#2ECC71', '#A569BD', '#40DFEF', '#F4D03F', '#FF87B2', '#E74C3C']
     const icons = ['format-list-bulleted', 'weather-sunny', 'moon-waning-crescent', 'globe-model', 'briefcase-outline', 'run', 'weight-lifter'
                     ,'gamepad-variant-outline', 'camera-outline', 'food-outline', 'music', 'cards-heart-outline', 'car-hatchback', 'brush',
-                    'home-outline', 'filmstrip', 'wrench-outline', 'shopping-outline', 'school-outline', 'airplane', 'shower']
+                    'home-outline', 'filmstrip', 'wrench-outline', 'shopping-outline', 'school-outline', 'airplane', 'shower', 'airballoon-outline'
+                    , 'alarm', 'alert-circle-outline', 'anchor', 'android', 'angular', 'apple', 'arm-flex-outline', 'atom', 'baby-face-outline'
+                    , 'baby-carriage', 'badge-account-horizontal-outline', 'bank', 'bash', 'basketball', 'bicycle', 'dog-side', 'camera',
+                    'cart-outline', 'cash', 'chart-line']
     const [text, setText] = useState(props.list.category);
     const [color, setColor] = useState(props.list.color)
     const [icon, setIcon] = useState(props.list.icon)
@@ -50,7 +53,7 @@ function EditCategory(props){
     }
 
     return (
-        <SafeAreaView style = {[styles.container]}>
+        <SafeAreaView style = {[styles.container, {backgroundColor: color + 20}]}>
             <View style = {styles.top}>
                 <TouchableOpacity onPress = {props.close} >
                     <Icon name = 'times' size = {30}/>
@@ -61,7 +64,7 @@ function EditCategory(props){
                 </TouchableOpacity>
             </View>
             <View style = {{gap: 20, alignItems: 'center'}}>
-                <Text style = {styles.header}>Add Task List</Text>
+                <Text style = {styles.header}>Edit Task List</Text>
                 <View style = {{width: '90%'}}>
                     <TextInput maxLength = {30} placeholder='Title' style = {styles.input} onChangeText={text => handleText(text)} defaultValue = {text}/>
                 </View>
@@ -127,6 +130,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: 20,
-        width: '90%'
+        width: '90%',
+        justifyContent: 'center'
     }
 })
