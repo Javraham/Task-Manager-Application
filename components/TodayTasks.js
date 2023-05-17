@@ -68,7 +68,7 @@ function TodayTasks(props) {
         for(let i = 0; i < todayList.length; i++){
             for(let j = 0; j < todayList[i].todo.length; j++){
                 if (!todayList[i].todo[j].completed){
-                    items.push(todayList[i].todo[j].name);
+                    items.push([todayList[i].color, todayList[i].todo[j].name]);
                     count++;
                 }
                 if(count === 3) break
@@ -79,8 +79,8 @@ function TodayTasks(props) {
         return items.map((value, index) => {
             return (
                 <View key={index} style = {{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
-                    <Icon name = 'circle-o'/>
-                    <Text numberOfLines = {1} style = {{width: '60%'}}>{value}</Text>
+                    <Icon name = 'circle' size = {7} color={value[0]}/>
+                    <Text numberOfLines = {1} style = {{width: '60%'}}>{value[1]}</Text>
                 </View>
             )
         })
@@ -98,14 +98,14 @@ function TodayTasks(props) {
                     deleteTodo = {(list, index, i) => props.deleteTodo(list, index, i)}
                     rejectDelete = {true}/>
             </Modal>
-            <LinearGradient colors={['#EBDEF0', '#EBDEF0','#E8DAEF', '#E8DAEF']} style = {styles.container} start={{ x: 0, y: 0 }}  end={{ x: 1, y: 0 }}>
+            <LinearGradient colors={['#FFFFFF', '#FFFFFF']} style = {styles.container} start={{ x: 0, y: 0 }}  end={{ x: 1, y: 0 }}>
             <Pressable onPress={() => toggleShow() } >
                 <View style = {{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <View style = {{gap: 5}}>
-                        <Text style = {{fontSize: 25, fontWeight: 600, }}>Todays Tasks</Text>
+                        <Text style = {{fontSize: 25, fontWeight: 600, color: props.color}}>Todays Tasks</Text>
                         <View style = {{flexDirection: 'row', alignItems: 'center', gap: 3}}>
-                            <Icon name = 'calendar' />
-                            <Text >{month} {date.getDate()}, {date.getFullYear()} </Text>
+                            <Icon name = 'calendar' color={props.color}/>
+                            <Text style = {{color: props.color}}>{month} {date.getDate()}, {date.getFullYear()} </Text>
                         </View>
                         <View>
                             {renderItems()}
@@ -126,7 +126,7 @@ function TodayTasks(props) {
                     </View>
                 </View>
                 <View>
-                    <Text style = {{textAlign: 'center', fontSize: 18, padding: 5}}>{numComp} of {length} Tasks Completed</Text>
+                    <Text style = {{textAlign: 'center', fontSize: 18, padding: 5, color: props.color}}>{numComp} of {length} Tasks Completed</Text>
                 </View>
             </Pressable>
             </LinearGradient >

@@ -168,7 +168,6 @@ export default TodayPage;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F4ECF7'
     },
 
     addItem: {

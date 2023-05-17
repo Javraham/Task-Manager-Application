@@ -179,7 +179,8 @@ class HomePage extends React.Component {
                     <TodayTasks 
                         list = {this.getTodaysList()} 
                         updateList = {(list, index, i) => this.updateTodayList(list, index, i)} 
-                        deleteTodo = {(list, index, i) => this.deleteTodo(list, index, i)}/>
+                        deleteTodo = {(list, index, i) => this.deleteTodo(list, index, i)}
+                        color = 'black'/>
                 </View>
                 
                 <View style = {{ gap: 20, height: '30%'}}>
