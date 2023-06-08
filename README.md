@@ -1,2 +1,1 @@
-# Task Manager Application
-#View Code in the master branch
+# View Code in Master Branch
